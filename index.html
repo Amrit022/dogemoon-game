@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>DogeMoon Telegram Mini App | $DMOON</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root {
+--bg: #070712;
+--card-bg: #0f1021;
+--card-border: rgba(255, 255, 255, 0.08);
+--primary: #9945FF;
+--secondary: #14F195;
+--accent: #FFD700;
+--danger: #FF4444;
+--telegram: #229ED9;
+--text: #FFFFFF;
+--text-dim: #9090AA;
+--font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+* {
+box-sizing: border-box;
+margin: 0;
+padding: 0;
+font-family: var(--font);
+user-select: none;
+-webkit-user-select: none;
+-webkit-tap-highlight-color: transparent;
+}
+body {
+background-color: var(--bg);
+color: var(--text);
+min-height: 100vh;
+min-height: -webkit-fill-available;
+display: flex;
+justify-content: center;
+align-items: center;
+overflow-x: hidden;
+overflow-y: auto;
+}
+.app-container {
+width: 100%;
+max-width: 440px;
+height: 100vh;
+max-height: 900px;
+background: radial-gradient(circle at 50% 12%, rgba(153, 69, 255, 0.22), transparent 70%), var(--card-bg);
+display: flex;
+flex-direction: column;
+position: relative;
+box-shadow: 0 0 60px rgba(0, 0, 0, 0.9);
+border-radius: 24px;
+overflow: hidden;
+border: 1px solid rgba(255, 255, 255, 0.06);
+}
+@media (max-width: 480px) {
+.app-container {
+border-radius: 0;
+max-height: 100vh;
+height: 100vh;
+}
+}
+#telegram-gate {
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: rgba(7, 7, 18, 0.98);
+backdrop-filter: blur(20px);
+z-index: 9999;
+display: none;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+padding: 30px 24px;
+text-align: center;
+}
+.gate-logo {
+width: 90px;
+height: 90px;
+border-radius: 50%;
+border: 3px solid var(--telegram);
+box-shadow: 0 0 25px rgba(34, 158, 217, 0.5);
+margin-bottom: 20px;
+animation: pulse 2s infinite ease-in-out;
+}
+@keyframes pulse {
+0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(34, 158, 217, 0.4); }
+50% { transform: scale(1.05); box-shadow: 0 0 35px rgba(34, 158, 217, 0.8); }
+}
+.gate-badge {
+background: rgba(34, 158, 217, 0.15);
+color: var(--telegram);
+border: 1px solid rgba(34, 158, 217, 0.4);
+font-size: 11px;
+font-weight: 800;
+padding: 4px 12px;
+border-radius: 20px;
+margin-bottom: 14px;
+letter-spacing: 1px;
+}
+.gate-title {
+font-size: 22px;
+font-weight: 800;
+margin-bottom: 10px;
+background: linear-gradient(90deg, #FFFFFF, var(--telegram));
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+}
+.gate-desc {
+font-size: 13px;
+color: var(--text-dim);
+line-height: 1.6;
+margin-bottom: 24px;
+}
+.tg-btn {
+width: 100%;
+background: linear-gradient(135deg, #229ED9, #0088cc);
+color: #fff;
+font-weight: 800;
+font-size: 15px;
+padding: 15px;
+border-radius: 14px;
+text-decoration: none;
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 10px;
+box-shadow: 0 8px 24px rgba(34, 158, 217, 0.4);
+cursor: pointer;
+border: none;
+transition: transform 0.1s ease;
+}
+.tg-btn:active {
+transform: scale(0.98);
+}
+.dev-bypass-btn {
+background: none;
+border: none;
+color: var(--text-dim);
+font-size: 11px;
+margin-top: 20px;
+cursor: pointer;
+text-decoration: underline;
+}
+.header {
+padding: 12px 16px 8px;
+display: flex;
+justify-content: space-between;
+align-items: center;
+border-bottom: 1px solid var(--card-border);
+background: rgba(15, 16, 33, 0.85);
+backdrop-filter: blur(12px);
+z-index: 20;
+}
+.header-token {
+display: flex;
+align-items: center;
+gap: 10px;
+}
+.header-logo {
+width: 36px;
+height: 36px;
+border-radius: 50%;
+border: 2px solid var(--secondary);
+box-shadow: 0 0 10px rgba(20, 241, 149, 0.3);
+}
+.header-title h1 {
+font-size: 15px;
+font-weight: 800;
+background: linear-gradient(90deg, #FFFFFF, var(--secondary));
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+display: flex;
+align-items: center;
+gap: 6px;
+}
+.tg-verified-pill {
+font-size: 9px;
+color: var(--telegram);
+background: rgba(34, 158, 217, 0.15);
+border: 1px solid rgba(34, 158, 217, 0.3);
+padding: 1px 6px;
+border-radius: 10px;
+font-weight: 700;
+}
+.player-username {
+font-size: 11px;
+color: var(--text-dim);
+font-weight: 600;
+margin-top: 1px;
+}
+.header-actions {
+display: flex;
+align-items: center;
+gap: 6px;
+}
+.icon-btn {
+background: rgba(255, 255, 255, 0.06);
+border: 1px solid var(--card-border);
+color: #fff;
+width: 34px;
+height: 34px;
+border-radius: 10px;
+display: flex;
+justify-content: center;
+align-items: center;
+cursor: pointer;
+font-size: 15px;
+transition: all 0.15s ease;
+}
+.icon-btn:active {
+transform: scale(0.92);
+background: rgba(255, 255, 255, 0.15);
+}
+.view-content {
+flex: 1;
+display: flex;
+flex-direction: column;
+overflow-y: auto;
+overflow-x: hidden;
+position: relative;
+}
+.score-container {
+text-align: center;
+padding: 16px 20px 8px;
+}
+.score-label {
+font-size: 11px;
+color: var(--text-dim);
+text-transform: uppercase;
+letter-spacing: 1.2px;
+font-weight: 700;
+}
+.score-val {
+font-size: 44px;
+font-weight: 900;
+letter-spacing: -1px;
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 8px;
+margin: 2px 0;
+}
+.score-val span {
+background: linear-gradient(135deg, #FFFFFF 20%, var(--accent) 100%);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+text-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
+}
+.passive-badge {
+display: inline-flex;
+align-items: center;
+gap: 5px;
+font-size: 11px;
+color: var(--secondary);
+font-weight: 600;
+background: rgba(20, 241, 149, 0.08);
+padding: 3px 10px;
+border-radius: 12px;
+border: 1px solid rgba(20, 241, 149, 0.2);
+}
+.coin-area {
+flex: 1;
+display: flex;
+justify-content: center;
+align-items: center;
+position: relative;
+touch-action: manipulation;
+}
+.coin-wrapper {
+position: relative;
+cursor: pointer;
+border-radius: 50%;
+padding: 14px;
+background: radial-gradient(circle, rgba(153, 69, 255, 0.35) 0%, rgba(20, 241, 149, 0.1) 60%, transparent 80%);
+transition: transform 0.08s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.coin-wrapper:active {
+transform: scale(0.92);
+}
+.coin-img {
+width: 210px;
+height: 210px;
+border-radius: 50%;
+box-shadow: 0 0 45px rgba(153, 69, 255, 0.6), 0 0 80px rgba(20, 241, 149, 0.3);
+border: 4px solid rgba(255, 255, 255, 0.25);
+pointer-events: none;
+display: block;
+transition: filter 0.15s ease;
+}
+.coin-wrapper:active .coin-img {
+filter: brightness(1.2);
+}
+.floating-text {
+position: absolute;
+color: var(--accent);
+font-weight: 900;
+font-size: 28px;
+pointer-events: none;
+animation: floatUp 0.75s ease-out forwards;
+text-shadow: 0 0 12px rgba(255, 215, 0, 0.9);
+z-index: 100;
+}
+@keyframes floatUp {
+0% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+50% { transform: translate(-50%, -40px) scale(1.3); }
+100% { opacity: 0; transform: translate(-50%, -85px) scale(1); }
+}
+.energy-container {
+padding: 0 24px 12px;
+}
+.energy-header {
+display: flex;
+justify-content: space-between;
+font-size: 12px;
+margin-bottom: 6px;
+font-weight: 700;
+}
+.energy-bar-bg {
+width: 100%;
+height: 10px;
+background: rgba(255, 255, 255, 0.08);
+border-radius: 10px;
+overflow: hidden;
+}
+.energy-bar-fill {
+height: 100%;
+width: 100%;
+background: linear-gradient(90deg, var(--primary), var(--secondary));
+border-radius: 10px;
+transition: width 0.12s ease;
+box-shadow: 0 0 12px var(--secondary);
+}
+.bottom-nav {
+background: #0b0b18;
+border-top: 1px solid rgba(255, 255, 255, 0.1);
+display: grid;
+grid-template-columns: repeat(5, 1fr);
+padding: 10px 8px max(14px, env(safe-area-inset-bottom, 14px));
+z-index: 1000;
+position: relative;
+box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.5);
+}
+.nav-btn {
+background: none;
+border: none;
+color: var(--text-dim);
+font-size: 10px;
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 4px;
+cursor: pointer;
+font-weight: 700;
+padding: 6px 2px;
+border-radius: 12px;
+transition: all 0.15s ease;
+}
+.nav-btn svg {
+width: 22px;
+height: 22px;
+fill: currentColor;
+transition: transform 0.15s ease;
+}
+.nav-btn.active {
+color: var(--secondary);
+background: rgba(20, 241, 149, 0.1);
+}
+.nav-btn.active svg {
+transform: scale(1.1);
+}
+.modal {
+display: none;
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: rgba(8, 8, 16, 0.98);
+backdrop-filter: blur(14px);
+z-index: 500;
+flex-direction: column;
+padding: 20px 20px 24px;
+animation: fadeIn 0.2s ease;
+overflow-y: auto;
+}
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(12px); }
+to { opacity: 1; transform: translateY(0); }
+}
+.modal-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 16px;
+}
+.modal-header h2 {
+font-size: 19px;
+font-weight: 800;
+background: linear-gradient(90deg, #FFFFFF, var(--secondary));
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+}
+.modal-close {
+background: rgba(255, 255, 255, 0.1);
+border: none;
+color: #fff;
+font-size: 20px;
+width: 32px;
+height: 32px;
+border-radius: 50%;
+cursor: pointer;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+.card-item {
+background: rgba(255, 255, 255, 0.04);
+border: 1px solid var(--card-border);
+border-radius: 16px;
+padding: 13px 14px;
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 10px;
+transition: background 0.15s ease;
+}
+.card-item:hover {
+background: rgba(255, 255, 255, 0.07);
+}
+.card-info h4 {
+font-size: 14px;
+margin-bottom: 3px;
+font-weight: 700;
+}
+.card-info p {
+font-size: 11px;
+color: var(--text-dim);
+}
+.card-btn {
+background: linear-gradient(135deg, var(--primary), var(--secondary));
+color: #000;
+border: none;
+padding: 8px 14px;
+border-radius: 10px;
+font-size: 12px;
+font-weight: 800;
+cursor: pointer;
+white-space: nowrap;
+transition: opacity 0.15s;
+}
+.card-btn:disabled {
+opacity: 0.35;
+cursor: not-allowed;
+}
+.input-field {
+width: 100%;
+background: rgba(255, 255, 255, 0.06);
+border: 1px solid rgba(255, 255, 255, 0.15);
+border-radius: 12px;
+padding: 13px;
+color: #fff;
+font-size: 13px;
+margin-bottom: 12px;
+outline: none;
+}
+.input-field:focus {
+border-color: var(--secondary);
+}
+.action-btn {
+width: 100%;
+background: linear-gradient(90deg, var(--secondary), var(--primary));
+color: #000;
+font-weight: 800;
+border: none;
+padding: 13px;
+border-radius: 12px;
+font-size: 14px;
+cursor: pointer;
+text-align: center;
+text-decoration: none;
+display: block;
+margin-bottom: 10px;
+transition: transform 0.1s ease;
+}
+.action-btn:active {
+transform: scale(0.98);
+}
+.pool-box {
+background: linear-gradient(135deg, rgba(153, 69, 255, 0.15), rgba(20, 241, 149, 0.15));
+border: 1px solid rgba(20, 241, 149, 0.3);
+border-radius: 16px;
+padding: 16px;
+text-align: center;
+margin-bottom: 16px;
+}
+.pool-title {
+font-size: 11px;
+color: var(--text-dim);
+text-transform: uppercase;
+letter-spacing: 1px;
+margin-bottom: 4px;
+}
+.pool-amount {
+font-size: 24px;
+font-weight: 900;
+color: var(--accent);
+}
+.pool-desc {
+font-size: 11px;
+color: var(--secondary);
+margin-top: 4px;
+}
+</style>
+</head>
+<body>
+<div class="app-container">
+<div id="telegram-gate">
+<img src="https://files.catbox.moe/480s3q.jpg" class="gate-logo" alt="DogeMoon">
+<div class="gate-badge">✈️ TELEGRAM EXCLUSIVE</div>
+<div class="gate-title">Play in Telegram</div>
+<div class="gate-desc">
+DogeMoon Tap-to-Earn & the <strong>30,000,000 $DMOON</strong> Season 1 Airdrop Mining is exclusive to the Telegram Mini App.
+</div>
+<a id="gate-tg-link" href="https://t.me/DogeMoonTapBot" target="_blank" class="tg-btn">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.75-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
+</svg>
+Launch Telegram Mini App
+</a>
+<button class="dev-bypass-btn" onclick="bypassTelegramGate()">
+Preview Mode (Dev Test)
+</button>
+</div>
+<div class="header">
+<div class="header-token">
+<img src="https://files.catbox.moe/480s3q.jpg" class="header-logo" alt="DogeMoon">
+<div class="header-title">
+<h1>DogeMoon <span class="tg-verified-pill">TMA</span></h1>
+<div class="player-username" id="player-tg-name">@telegram_user</div>
+</div>
+</div>
+<div class="header-actions">
+<button class="icon-btn" id="sfx-btn" onclick="toggleSFX()" title="Sound FX">🔊</button>
+<button class="icon-btn" onclick="openModal('daily-modal')" title="Daily Bonus">🎁</button>
+</div>
+</div>
+<div class="view-content" id="main-view">
+<div class="score-container">
+<div class="score-label">Mined $DMOON Balance</div>
+<div class="score-val">
+<span id="score">0</span>
+</div>
+<div class="passive-badge" id="passive-rate-badge">
+⚡ +<span id="passive-rate">0</span> DMOON / sec (Auto Miner)
+</div>
+</div>
+<div class="coin-area" id="coin-area">
+<div class="coin-wrapper" id="coin-btn">
+<img src="https://files.catbox.moe/480s3q.jpg" class="coin-img" alt="Tap DogeMoon">
+</div>
+</div>
+<div class="energy-container">
+<div class="energy-header">
+<span>⚡ Energy</span>
+<span id="energy-text">1000 / 1000</span>
+</div>
+<div class="energy-bar-bg">
+<div class="energy-bar-fill" id="energy-fill" style="width: 100%;"></div>
+</div>
+</div>
+</div>
+<div class="bottom-nav">
+<button class="nav-btn active" id="tab-tap" onclick="switchNav('tap')">
+<svg viewBox="0 0 24 24"><path d="M9 11.24V7.5C9 6.12 10.12 5 11.5 5S14 6.12 14 7.5v3.74c1.21-.81 2-2.18 2-3.74C16 5.01 13.99 3 11.5 3S7 5.01 7 7.5c0 1.56.79 2.93 2 3.74zM18.84 15.25l-4.71-3.77c-.38-.3-.87-.48-1.38-.48h-1.5v3h1.5l3.86 3.09c.47.38.74.95.74 1.55v2.36h-8.7V17h-2v4c0 .55.45 1 1 1h10.7c.7 0 1.34-.37 1.69-.97l.8-1.37c.33-.56.32-1.26-.01-1.81l-1.99-2.6z"/></svg>
+Tap
+</button>
+<button class="nav-btn" id="tab-boost" onclick="openModal('boost-modal')">
+<svg viewBox="0 0 24 24"><path d="M12 2.5s4.5 4.5 4.5 9a4.5 4.5 0 0 1-9 0c0-4.5 4.5-9 4.5-9z"/></svg>
+Boosts
+</button>
+<button class="nav-btn" id="tab-tasks" onclick="openModal('tasks-modal')">
+<svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+Tasks
+</button>
+<button class="nav-btn" id="tab-airdrop" onclick="openModal('airdrop-modal')">
+<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+Airdrop
+</button>
+<button class="nav-btn" id="tab-trade" onclick="openModal('trade-modal')">
+<svg viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>
+Trade
+</button>
+</div>
+<div class="modal" id="boost-modal">
+<div class="modal-header">
+<h2>🚀 Doge Boosters</h2>
+<button class="modal-close" onclick="closeModal('boost-modal')">&times;</button>
+</div>
+<div class="card-item">
+<div class="card-info">
+<h4>⚡ Multitap</h4>
+<p>+1 DMOON per tap (Level <span id="multitap-lvl">1</span>)</p>
+</div>
+<button class="card-btn" id="btn-multitap" onclick="buyMultitap()">Buy 100</button>
+</div>
+<div class="card-item">
+<div class="card-info">
+<h4>🤖 Auto-Doge Miner</h4>
+<p>+5 DMOON/sec idle mining (Lvl <span id="autobot-lvl">0</span>)</p>
+</div>
+<button class="card-btn" id="btn-autobot" onclick="buyAutoMiner()">Buy 500</button>
+</div>
+<div class="card-item">
+<div class="card-info">
+<h4>🔋 Energy Refill</h4>
+<p>Instantly refuels energy gauge to max</p>
+</div>
+<button class="card-btn" id="btn-refill" onclick="refillEnergy()">Buy 250</button>
+</div>
+<div class="card-item">
+<div class="card-info">
+<h4>📦 Energy Expansion</h4>
+<p>+500 Maximum Energy Capacity</p>
+</div>
+<button class="card-btn" id="btn-expand" onclick="buyEnergyExpansion()">Buy 1,000</button>
+</div>
+</div>
+<div class="modal" id="tasks-modal">
+<div class="modal-header">
+<h2>📋 Telegram & Social Quests</h2>
+<button class="modal-close" onclick="closeModal('tasks-modal')">&times;</button>
+</div>
+<p style="font-size: 12px; color: var(--text-dim); margin-bottom: 16px;">
+Complete Telegram & community quests to earn huge bonus $DMOON tokens credited immediately to your balance!
+</p>
+<div class="card-item">
+<div class="card-info">
+<h4>✈️ Join Telegram Channel</h4>
+<p>+5,000 $DMOON</p>
+</div>
+<button class="card-btn" id="task-btn-tgchannel" onclick="doTask('tgchannel', 'https://t.me/DogeMoon_Sol', 5000)">Claim</button>
+</div>
+<div class="card-item">
+<div class="card-info">
+<h4>💬 Join Telegram Group</h4>
+<p>+5,000 $DMOON</p>
+</div>
+<button class="card-btn" id="task-btn-tggroup" onclick="doTask('tggroup', 'https://t.me/DogeMoon_Sol_Chat', 5000)">Claim</button>
+</div>
+<div class="card-item">
+<div class="card-info">
+<h4>🐦 Follow @DogeMoon on X</h4>
+<p>+2,500 $DMOON</p>
+</div>
+<button class="card-btn" id="task-btn-twitter" onclick="doTask('twitter', 'https://twitter.com/search?q=%24DMOON', 2500)">Claim</button>
+</div>
+<div class="card-item">
+<div class="card-info">
+<h4>🔥 Verify 700M Burn Proof</h4>
+<p>+2,000 $DMOON</p>
+</div>
+<button class="card-btn" id="task-btn-burn" onclick="doTask('burn', 'https://solscan.io/tx/4mZxEthUGkwAV2JaJj4362PnPTw87iGMyjnSYp8N7zFZRNEYG3w4frgHEgpqrCDScx1oKzf7F2Mf36AsYdu6MSK3', 2000)">Claim</button>
+</div>
+<div class="card-item">
+<div class="card-info">
+<h4>📊 View Live Chart</h4>
+<p>+1,000 $DMOON</p>
+</div>
+<button class="card-btn" id="task-btn-dex" onclick="doTask('dex', 'https://dexscreener.com/solana/BBXYnoxijWriwwt4RbWQdgBugf8NnUWehipiipGEJ8zT', 1000)">Claim</button>
+</div>
+</div>
+<div class="modal" id="airdrop-modal">
+<div class="modal-header">
+<h2>🎁 30M Community Airdrop</h2>
+<button class="modal-close" onclick="closeModal('airdrop-modal')">&times;</button>
+</div>
+<div class="pool-box">
+<div class="pool-title">Season 1 Telegram Mining Pool</div>
+<div class="pool-amount">30,000,000 $DMOON</div>
+<div class="pool-desc">🔥 700M Burned | 30M Reserved for Telegram Tappers!</div>
+</div>
+<p style="font-size: 13px; color: var(--text-dim); margin-bottom: 14px;">
+Register your Solana wallet address below. At the end of Season 1, real on-chain $DMOON will be airdropped straight to top Telegram miners!
+</p>
+<input type="text" id="wallet-input" class="input-field" placeholder="Paste Solana address (e.g. kwQQ...VNk)">
+<button class="action-btn" onclick="saveWallet()">Save Wallet Address</button>
+<div id="wallet-status" style="font-size: 12px; color: var(--secondary); margin-bottom: 16px; text-align: center; font-weight: 700;"></div>
+<button class="action-btn" style="background: rgba(34, 158, 217, 0.2); color: #229ED9; border: 1px solid #229ED9;" onclick="shareTelegram()">
+✈️ Invite Friends via Telegram (+10,000)
+</button>
+</div>
+<div class="modal" id="trade-modal">
+<div class="modal-header">
+<h2>📈 Trade & Chart</h2>
+<button class="modal-close" onclick="closeModal('trade-modal')">&times;</button>
+</div>
+<div class="pool-box" style="margin-bottom: 16px;">
+<div class="pool-title">Token Contract Address</div>
+<div style="font-family: monospace; font-size: 11px; color: var(--secondary); word-break: break-all; margin-top: 6px;">
+BBXYnoxijWriwwt4RbWQdgBugf8NnUWehipiipGEJ8zT
+</div>
+</div>
+<a href="https://raydium.io/swap/?inputMint=sol&outputMint=BBXYnoxijWriwwt4RbWQdgBugf8NnUWehipiipGEJ8zT" target="_blank" class="action-btn">
+🦄 Trade on Raydium (0% Tax)
+</a>
+<a href="https://dexscreener.com/solana/BBXYnoxijWriwwt4RbWQdgBugf8NnUWehipiipGEJ8zT" target="_blank" class="action-btn" style="background: #111; color: #fff; border: 1px solid rgba(255,255,255,0.2);">
+📊 View DexScreener Chart
+</a>
+<a href="https://solscan.io/tx/4mZxEthUGkwAV2JaJj4362PnPTw87iGMyjnSYp8N7zFZRNEYG3w4frgHEgpqrCDScx1oKzf7F2Mf36AsYdu6MSK3" target="_blank" class="action-btn" style="background: rgba(255,68,68,0.15); color: #FF4444; border: 1px solid #FF4444;">
+🔥 View 700M Burn Tx on Solscan
+</a>
+</div>
+<div class="modal" id="daily-modal">
+<div class="modal-header">
+<h2>🎁 Daily Miner Reward</h2>
+<button class="modal-close" onclick="closeModal('daily-modal')">&times;</button>
+</div>
+<div class="pool-box">
+<div class="pool-title">Current Streak</div>
+<div class="pool-amount" id="streak-days">Day 1</div>
+<div class="pool-desc">Come back every 24 hours to claim huge multiplier rewards!</div>
+</div>
+<button class="action-btn" id="claim-daily-btn" onclick="claimDailyBonus()">
+Claim +1,000 $DMOON
+</button>
+<div id="daily-status" style="font-size: 12px; color: var(--text-dim); text-align: center; margin-top: 8px;"></div>
+</div>
+</div>
+<script>
+// ==========================================
+// TELEGRAM MINI APP INITIALIZATION
+// ==========================================
+const tg = window.Telegram?.WebApp;
+const isInsideTelegram = !!(tg && (tg.initData || window.location.hash.includes('tgWebAppData')));
+// Check if running in Telegram or external browser
+const gateEl = document.getElementById('telegram-gate');
+const playerTgNameEl = document.getElementById('player-tg-name');
+if (tg) {
+try {
+tg.ready();
+tg.expand();
+if (tg.setHeaderColor) tg.setHeaderColor('#070712');
+if (tg.setBackgroundColor) tg.setBackgroundColor('#070712');
+} catch (e) {}
+const user = tg.initDataUnsafe?.user;
+if (user) {
+const username = user.username ? `@${user.username}` : (user.first_name || 'Cadet');
+playerTgNameEl.innerText = username;
+localStorage.setItem('dmoon_tg_user', JSON.stringify(user));
+}
+}
+// Enforce Telegram Gate if opened in plain external browser
+const devBypass = sessionStorage.getItem('dmoon_dev_bypass') === 'true';
+if (!isInsideTelegram && !devBypass) {
+gateEl.style.display = 'flex';
+} else {
+gateEl.style.display = 'none';
+}
+function bypassTelegramGate() {
+sessionStorage.setItem('dmoon_dev_bypass', 'true');
+gateEl.style.display = 'none';
+}
+// ==========================================
+// PERSISTENT GAME STATE
+// ==========================================
+let score = parseInt(localStorage.getItem('dmoon_score') || '0');
+let energy = parseInt(localStorage.getItem('dmoon_energy') || '1000');
+let maxEnergy = parseInt(localStorage.getItem('dmoon_max_energy') || '1000');
+let tapPower = parseInt(localStorage.getItem('dmoon_tappower') || '1');
+let autoRate = parseInt(localStorage.getItem('dmoon_autorate') || '0');
+let autoLvl = parseInt(localStorage.getItem('dmoon_autolvl') || '0');
+let multitapCost = parseInt(localStorage.getItem('dmoon_multitap_cost') || '100');
+let autoMinerCost = parseInt(localStorage.getItem('dmoon_autominer_cost') || '500');
+let expandCost = parseInt(localStorage.getItem('dmoon_expand_cost') || '1000');
+let sfxEnabled = localStorage.getItem('dmoon_sfx') !== 'false';
+let lastDaily = parseInt(localStorage.getItem('dmoon_last_daily') || '0');
+let streak = parseInt(localStorage.getItem('dmoon_streak') || '1');
+// UI Elements
+const scoreEl = document.getElementById('score');
+const energyFillEl = document.getElementById('energy-fill');
+const energyTextEl = document.getElementById('energy-text');
+const coinBtn = document.getElementById('coin-btn');
+const coinArea = document.getElementById('coin-area');
+const passiveRateEl = document.getElementById('passive-rate');
+const sfxBtn = document.getElementById('sfx-btn');
+function updateUI() {
+scoreEl.innerText = score.toLocaleString();
+energyTextEl.innerText = `${energy} / ${maxEnergy}`;
+energyFillEl.style.width = `${(energy / maxEnergy) * 100}%`;
+passiveRateEl.innerText = autoRate;
+document.getElementById('multitap-lvl').innerText = tapPower;
+document.getElementById('autobot-lvl').innerText = autoLvl;
+document.getElementById('btn-multitap').innerText = `Buy ${multitapCost.toLocaleString()}`;
+document.getElementById('btn-autobot').innerText = `Buy ${autoMinerCost.toLocaleString()}`;
+document.getElementById('btn-expand').innerText = `Buy ${expandCost.toLocaleString()}`;
+sfxBtn.innerText = sfxEnabled ? '🔊' : '🔇';
+localStorage.setItem('dmoon_score', score);
+localStorage.setItem('dmoon_energy', energy);
+localStorage.setItem('dmoon_max_energy', maxEnergy);
+localStorage.setItem('dmoon_tappower', tapPower);
+localStorage.setItem('dmoon_autorate', autoRate);
+localStorage.setItem('dmoon_autolvl', autoLvl);
+localStorage.setItem('dmoon_multitap_cost', multitapCost);
+localStorage.setItem('dmoon_autominer_cost', autoMinerCost);
+localStorage.setItem('dmoon_expand_cost') || '1000');
+let sfxEnabled = localStorage.getItem('dmoon_sfx') !== 'false';
+let lastDaily = parseInt(localStorage.getItem('dmoon_last_daily') || '0');
+let streak = parseInt(localStorage.getItem('dmoon_streak') || '1');
+// UI Elements
+const scoreEl = document.getElementById('score');
+const energyFillEl = document.getElementById('energy-fill');
+const energyTextEl = document.getElementById('energy-text');
+const coinBtn = document.getElementById('coin-btn');
+const coinArea = document.getElementById('coin-area');
+const passiveRateEl = document.getElementById('passive-rate');
+const sfxBtn = document.getElementById('sfx-btn');
+function updateUI() {
+scoreEl.innerText = score.toLocaleString();
+energyTextEl.innerText = `${energy} / ${maxEnergy}`;
+energyFillEl.style.width = `${(energy / maxEnergy) * 100}%`;
+passiveRateEl.innerText = autoRate;
+document.getElementById('multitap-lvl').innerText = tapPower;
+document.getElementById('autobot-lvl').innerText = autoLvl;
+document.getElementById('btn-multitap').innerText = `Buy ${multitapCost.toLocaleString()}`;
+document.getElementById('btn-autobot').innerText = `Buy ${autoMinerCost.toLocaleString()}`;
+document.getElementById('btn-expand').innerText = `Buy ${expandCost.toLocaleString()}`;
+sfxBtn.innerText = sfxEnabled ? '🔊' : '🔇';
+localStorage.setItem('dmoon_score', score);
+localStorage.setItem('dmoon_energy', energy);
+localStorage.setItem('dmoon_max_energy', maxEnergy);
+localStorage.setItem('dmoon_tappower', tapPower);
+localStorage.setItem('dmoon_autorate', autoRate);
+localStorage.setItem('dmoon_autolvl', autoLvl);
+localStorage.setItem('dmoon_multitap_cost', multitapCost);
+localStorage.setItem('dmoon_autominer_cost', autoMinerCost);
+localStorage.setItem('dmoon_expand_cost') || '1000');
+}
+// Web Audio Synthesizer
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let audioCtx = null;
+function playTapSound() {
+if (!sfxEnabled) return;
+try {
+if (!audioCtx) audioCtx = new AudioCtx();
+if (audioCtx.state === 'suspended') audioCtx.resume();
+const osc = audioCtx.createOscillator();
+const gain = audioCtx.createGain();
+osc.type = 'sine';
+function toggleSFX() {
+sfxEnabled = !sfxEnabled;
+localStorage.setItem('dmoon_sfx', sfxEnabled);
+updateUI();
+}
+// Tap Handling (Touch + Pointer + Telegram Haptics)
+coinBtn.addEventListener('pointerdown', (e) => {
+if (energy < tapPower) return;
+energy = Math.max(0, energy - tapPower);
+score += tapPower;
+// Telegram Native Haptic Feedback
+if (tg && tg.HapticFeedback) {
+tg.HapticFeedback.impactOccurred('light');
+} else if (navigator.vibrate) {
+navigator.vibrate(10);
+}
+playTapSound();
+// Particle floating number
+const rect = coinArea.getBoundingClientRect();
+const floatEl = document.createElement('div');
+floatEl.className = 'floating-text';
+floatEl.innerText = `+${tapPower}`;
+floatEl.style.left = `${e.clientX - rect.left}px`;
+floatEl.style.top = `${e.clientY - rect.top}px`;
+coinArea.appendChild(floatEl);
+setTimeout(() => floatEl.remove(), 750);
+updateUI();
+});
+// Passive Energy Regen (+3 per sec)
+setInterval(() => {
+if (energy < maxEnergy) {
+energy = Math.min(maxEnergy, energy + 3);
+updateUI();
+}
+}, 1000);
+// Passive Auto Miner
+setInterval(() => {
+if (autoRate > 0) {
+score += autoRate;
+updateUI();
+}
+}, 1000);
+// Navigation & Modals
+function switchNav(tab) {
+document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+const activeBtn = document.getElementById(`tab-${tab}`);
+if (activeBtn) activeBtn.classList.add('active');
+}
+function openModal(id) {
+document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+document.getElementById(id).style.display = 'flex';
+if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+}
+function closeModal(id) {
+document.getElementById(id).style.display = 'none';
+switchNav('tap');
+}
+// Boost Purchase Functions
+function buyMultitap() {
+if (score >= multitapCost) {
+score -= multitapCost;
+tapPower += 1;
+multitapCost = Math.floor(multitapCost * 2.2);
+updateUI();
+if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+} else {
+alert('Not enough $DMOON to upgrade Multitap!');
+}
+}
+function buyAutoMiner() {
+if (score >= autoMinerCost) {
+score -= autoMinerCost;
+autoRate += 5;
+autoLvl += 1;
+autoMinerCost = Math.floor(autoMinerCost * 2.4);
+updateUI();
+if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+} else {
+alert('Not enough $DMOON to hire an Auto-Miner!');
+}
+}
+function refillEnergy() {
+if (score >= 250) {
+score -= 250;
+energy = maxEnergy;
+updateUI();
+closeModal('boost-modal');
+if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+} else {
+alert('Not enough $DMOON for Energy Refill!');
+}
+}
+function buyEnergyExpansion() {
+if (score >= expandCost) {
+score -= expandCost;
+maxEnergy += 500;
+energy = maxEnergy;
+expandCost = Math.floor(expandCost * 2.5);
+updateUI();
+if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+} else {
+alert('Not enough $DMOON for Energy Expansion!');
+}
+}
+// Community Tasks Execution
+function doTask(taskId, url, reward) {
+const done = localStorage.getItem(`dmoon_task_${taskId}`);
+if (done) return;
+if (tg && tg.openLink) {
+tg.openLink(url);
+} else {
+window.open(url, '_blank');
+}
+score += reward;
+localStorage.setItem(`dmoon_task_${taskId}`, 'true');
+const btn = document.getElementById(`task-btn-${taskId}`);
+if (btn) {
+btn.innerText = 'Completed ✓';
+btn.disabled = true;
+btn.style.background = 'rgba(255,255,255,0.1)';
+btn.style.color = '#14F195';
+}
+if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+updateUI();
+}
+// Initialize task button states
+['tgchannel', 'tggroup', 'twitter', 'burn', 'dex'].forEach(taskId => {
+if (localStorage.getItem(`dmoon_task_${taskId}`)) {
+const btn = document.getElementById(`task-btn-${taskId}`);
+if (btn) {
+btn.innerText = 'Completed ✓';
+btn.disabled = true;
+btn.style.background = 'rgba(255,255,255,0.1)';
+btn.style.color = '#14F195';
+}
+}
+});
+// Daily Miner Bonus
+function claimDailyBonus() {
+const now = Date.now();
+const oneDay = 24 * 60 * 60 * 1000;
+if (now - lastDaily < oneDay) {
+const hoursLeft = Math.ceil((oneDay - (now - lastDaily)) / (60 * 60 * 1000));
+document.getElementById('daily-status').innerText = `Next reward available in ${hoursLeft} hours!`;
+return;
+}
+const reward = 1000 * streak;
+score += reward;
+lastDaily = now;
+streak += 1;
+localStorage.setItem('dmoon_last_daily', lastDaily);
+localStorage.setItem('dmoon_streak', streak);
+document.getElementById('streak-days').innerText = `Day ${streak}`;
+document.getElementById('daily-status').innerText = `Claimed +${reward.toLocaleString()} $DMOON!`;
+if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+updateUI();
+}
+// Wallet Registration
+function saveWallet() {
+const addr = document.getElementById('wallet-input').value.trim();
+if (addr.length >= 32 && addr.length <= 44) {
+localStorage.setItem('dmoon_wallet', addr);
+document.getElementById('wallet-status').innerText = `✓ Wallet registered: ${addr.slice(0, 4)}...${addr.slice(-4)}`;
+if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+} else {
+alert('Please enter a Solana wallet address (32-44 characters)!');
+}
+}
+const savedWallet = localStorage.getItem('dmoon_wallet');
+if (savedWallet) {
+document.getElementById('wallet-input').value = savedWallet;
+document.getElementById('wallet-status').innerText = `✓ Wallet registered: ${savedWallet.slice(0, 4)}...${savedWallet.slice(-4)}`;
+}
+// Telegram Native Share
+function shareTelegram() {
+const text = encodeURIComponent("🚀 Play DogeMoon Tap-to-Earn on Telegram! 700M burned, 20M Airdrop Pool is LIVE. Mine $DMOON now!");
+const url = encodeURIComponent('https://t.me/DogeMoonTapBot');
+const shareUrl = `https://t.me/share/url?url=${url}&text=${text}`;
+if (tg && tg.openTelegramLink) {
+tg.openTelegramLink(shareUrl);
+} else {
+window.open(shareUrl, '_blank');
+}
+}
+updateUI();
+</script>
+</body>
+</html>
