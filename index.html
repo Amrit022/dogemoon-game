@@ -1,29 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>DogeMoon Telegram Mini App | $DMOON</title>
-  
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>DogeMoon Telegram Mini App v2.0 | $DMOON</title>
+
   <!-- Telegram WebApp SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
   <style>
     /* ========================================================
-       CLEAN CSS & CYBERPUNK THEME
+       DOGEMOON v2.0 — COSMIC GLASS THEME & GPU PERFORMANCE
        ======================================================== */
     :root {
-      --bg: #070712;
-      --card-bg: #0f1021;
-      --card-border: rgba(255, 255, 255, 0.08);
+      --bg: #05050f;
+      --shell: #0a0b1a;
+      --glass: rgba(255, 255, 255, 0.045);
+      --glass-strong: rgba(16, 18, 38, 0.88);
+      --border: rgba(255, 255, 255, 0.09);
       --primary: #9945FF;
       --secondary: #14F195;
       --accent: #FFD700;
-      --danger: #FF4444;
+      --danger: #FF4D4F;
       --telegram: #229ED9;
       --text: #FFFFFF;
-      --text-dim: #9090AA;
-      --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      --text-dim: #94A3B8;
+      --font: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     }
 
     * {
@@ -36,80 +38,83 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    body {
+    html, body {
+      height: 100%;
       background-color: var(--bg);
       color: var(--text);
-      min-height: 100vh;
-      min-height: -webkit-fill-available;
+      overflow: hidden;
+    }
+
+    body {
       display: flex;
       justify-content: center;
       align-items: center;
-      overflow-x: hidden;
-      overflow-y: auto;
-    }
-
-    /* App Container */
-    .my-rank-highlight {
-      border: 1px solid rgba(20, 241, 149, 0.4) !important;
-      background: rgba(20, 241, 149, 0.08) !important;
     }
 
     .app-container {
       width: 100%;
       max-width: 440px;
-      height: 100vh;
-      max-height: 900px;
-      background: radial-gradient(circle at 50% 12%, rgba(153, 69, 255, 0.22), transparent 70%), var(--card-bg);
+      height: 100dvh;
+      max-height: 920px;
+      background:
+        radial-gradient(circle at 50% 16%, rgba(153, 69, 255, 0.24), transparent 58%),
+        radial-gradient(circle at 82% 80%, rgba(20, 241, 149, 0.14), transparent 52%),
+        var(--shell);
       display: flex;
       flex-direction: column;
       position: relative;
-      box-shadow: 0 0 60px rgba(0, 0, 0, 0.9);
-      border-radius: 24px;
+      box-shadow: 0 0 60px rgba(0, 0, 0, 0.92);
       overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-left: 1px solid var(--border);
+      border-right: 1px solid var(--border);
     }
 
-    @media (max-width: 480px) {
+    @media (min-width: 481px) {
       .app-container {
-        border-radius: 0;
-        max-height: 100vh;
-        height: 100vh;
+        height: 94dvh;
+        border-radius: 28px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
       }
     }
 
+    /* Ambient Starfield (static GPU layer) */
+    .stars-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        radial-gradient(1px 1px at 18% 20%, rgba(255,255,255,0.45) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 80% 24%, rgba(20,241,149,0.5) 0%, transparent 100%),
+        radial-gradient(1px 1px at 12% 65%, rgba(153,69,255,0.55) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 86% 70%, rgba(255,215,0,0.45) 0%, transparent 100%),
+        radial-gradient(1px 1px at 48% 46%, rgba(255,255,255,0.3) 0%, transparent 100%);
+      z-index: 0;
+    }
+
     /* ========================================================
-       TELEGRAM-EXCLUSIVE GATE OVERLAY
+       TELEGRAM EXCLUSIVE GATE OVERLAY
        ======================================================== */
     #telegram-gate {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(7, 7, 18, 0.98);
-      backdrop-filter: blur(20px);
+      inset: 0;
+      background: rgba(5, 5, 15, 0.97);
       z-index: 9999;
       display: none;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 30px 24px;
+      padding: 32px 24px;
       text-align: center;
     }
 
     .gate-logo {
-      width: 90px;
-      height: 90px;
+      width: 96px;
+      height: 96px;
       border-radius: 50%;
       border: 3px solid var(--telegram);
-      box-shadow: 0 0 25px rgba(34, 158, 217, 0.5);
-      margin-bottom: 20px;
-      animation: pulse 2s infinite ease-in-out;
-    }
-
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(34, 158, 217, 0.4); }
-      50% { transform: scale(1.05); box-shadow: 0 0 35px rgba(34, 158, 217, 0.8); }
+      box-shadow: 0 0 28px rgba(34, 158, 217, 0.55);
+      margin-bottom: 18px;
+      object-fit: cover;
     }
 
     .gate-badge {
@@ -119,16 +124,16 @@
       font-size: 11px;
       font-weight: 800;
       padding: 4px 12px;
-      border-radius: 20px;
-      margin-bottom: 14px;
-      letter-spacing: 1px;
+      border-radius: 99px;
+      margin-bottom: 12px;
+      letter-spacing: 0.8px;
     }
 
     .gate-title {
-      font-size: 22px;
-      font-weight: 800;
+      font-size: 24px;
+      font-weight: 900;
       margin-bottom: 10px;
-      background: linear-gradient(90deg, #FFFFFF, var(--telegram));
+      background: linear-gradient(90deg, #fff, var(--telegram));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
@@ -136,8 +141,9 @@
     .gate-desc {
       font-size: 13px;
       color: var(--text-dim);
-      line-height: 1.6;
+      line-height: 1.55;
       margin-bottom: 24px;
+      max-width: 310px;
     }
 
     .tg-btn {
@@ -147,20 +153,15 @@
       font-weight: 800;
       font-size: 15px;
       padding: 15px;
-      border-radius: 14px;
+      border-radius: 16px;
       text-decoration: none;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 10px;
       box-shadow: 0 8px 24px rgba(34, 158, 217, 0.4);
-      cursor: pointer;
       border: none;
-      transition: transform 0.1s ease;
-    }
-
-    .tg-btn:active {
-      transform: scale(0.98);
+      cursor: pointer;
     }
 
     .dev-bypass-btn {
@@ -168,247 +169,836 @@
       border: none;
       color: var(--text-dim);
       font-size: 11px;
-      margin-top: 20px;
+      margin-top: 18px;
       cursor: pointer;
       text-decoration: underline;
     }
 
     /* ========================================================
-       TOP HEADER
+       IN-APP NON-BLOCKING TOAST NOTIFICATION
+       ======================================================== */
+    .toast-pill {
+      position: absolute;
+      top: 64px;
+      left: 50%;
+      transform: translate3d(-50%, -18px, 0);
+      background: rgba(12, 16, 34, 0.96);
+      border: 1px solid rgba(20, 241, 149, 0.45);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 9px 16px;
+      border-radius: 999px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.65);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.24s ease;
+      z-index: 8000;
+      max-width: 88%;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .toast-pill.show {
+      opacity: 1;
+      transform: translate3d(-50%, 0, 0);
+    }
+
+    .toast-pill.warn {
+      border-color: rgba(255, 215, 0, 0.55);
+      color: #FFE58F;
+    }
+
+    .toast-pill.err {
+      border-color: rgba(255, 77, 79, 0.6);
+      color: #FFA39E;
+    }
+
+    /* ========================================================
+       TOP HUD HEADER
        ======================================================== */
     .header {
-      padding: 12px 16px 8px;
+      padding: max(10px, env(safe-area-inset-top, 10px)) 16px 10px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid var(--card-border);
-      background: rgba(15, 16, 33, 0.85);
+      border-bottom: 1px solid var(--border);
+      background: rgba(10, 11, 26, 0.85);
       backdrop-filter: blur(12px);
-      z-index: 20;
+      z-index: 30;
+      position: relative;
     }
 
-    .header-token {
+    .player-meta {
       display: flex;
       align-items: center;
       gap: 10px;
+      min-width: 0;
+    }
+
+    .avatar-wrap {
+      position: relative;
+      flex-shrink: 0;
     }
 
     .header-logo {
-      width: 36px;
-      height: 36px;
+      width: 38px;
+      height: 38px;
       border-radius: 50%;
       border: 2px solid var(--secondary);
-      box-shadow: 0 0 10px rgba(20, 241, 149, 0.3);
+      box-shadow: 0 0 12px rgba(20, 241, 149, 0.35);
+      object-fit: cover;
+      display: block;
     }
 
-    .header-title h1 {
-      font-size: 15px;
-      font-weight: 800;
-      background: linear-gradient(90deg, #FFFFFF, var(--secondary));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+    .avatar-badge {
+      position: absolute;
+      bottom: -3px;
+      right: -4px;
+      background: #0a0b1a;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 99px;
+      font-size: 10px;
+      line-height: 1;
+      padding: 2px 3px;
+    }
+
+    .title-stack {
+      min-width: 0;
+    }
+
+    .name-row {
       display: flex;
       align-items: center;
       gap: 6px;
     }
 
-    .tg-verified-pill {
-      font-size: 9px;
-      color: var(--telegram);
-      background: rgba(34, 158, 217, 0.15);
-      border: 1px solid rgba(34, 158, 217, 0.3);
-      padding: 1px 6px;
-      border-radius: 10px;
-      font-weight: 700;
+    .player-name {
+      font-size: 14px;
+      font-weight: 800;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 120px;
     }
 
-    .player-username {
+    .league-pill {
+      font-size: 9.5px;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 8px;
+      background: rgba(153, 69, 255, 0.22);
+      color: #D8B4FE;
+      border: 1px solid rgba(153, 69, 255, 0.35);
+      white-space: nowrap;
+    }
+
+    .sub-row {
       font-size: 11px;
       color: var(--text-dim);
       font-weight: 600;
-      margin-top: 1px;
+      margin-top: 2px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
+
+    .sub-rank { color: var(--secondary); font-weight: 800; }
+    .sub-streak { color: var(--accent); font-weight: 800; }
 
     .header-actions {
       display: flex;
       align-items: center;
       gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .sync-chip {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 99px;
+      background: rgba(20, 241, 149, 0.12);
+      color: var(--secondary);
+      border: 1px solid rgba(20, 241, 149, 0.28);
+      display: none;
+    }
+    @media (min-width: 360px) {
+      .sync-chip { display: inline-block; }
     }
 
     .icon-btn {
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid var(--card-border);
+      background: var(--glass);
+      border: 1px solid var(--border);
       color: #fff;
       width: 34px;
       height: 34px;
-      border-radius: 10px;
+      border-radius: 11px;
       display: flex;
       justify-content: center;
       align-items: center;
       cursor: pointer;
       font-size: 15px;
-      transition: all 0.15s ease;
+      position: relative;
+      transition: transform 0.1s ease, background 0.15s ease;
     }
 
     .icon-btn:active {
-      transform: scale(0.92);
-      background: rgba(255, 255, 255, 0.15);
+      transform: scale(0.91);
+      background: rgba(255, 255, 255, 0.14);
+    }
+
+    .notif-dot {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--secondary);
+      box-shadow: 0 0 8px var(--secondary);
+      display: none;
     }
 
     /* ========================================================
-       MAIN TAP VIEW
+       OFFLINE EARNINGS CLAIM BANNER
        ======================================================== */
-    .view-content {
-      flex: 1;
+    .offline-banner {
+      margin: 10px 14px 0;
+      padding: 10px 12px;
+      border-radius: 16px;
+      background: linear-gradient(90deg, rgba(153, 69, 255, 0.24), rgba(20, 241, 149, 0.18));
+      border: 1px solid rgba(20, 241, 149, 0.42);
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      position: relative;
+      z-index: 20;
+      animation: slideDown 0.28s ease;
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .offline-left {
       display: flex;
-      flex-direction: column;
+      align-items: center;
+      gap: 9px;
+      min-width: 0;
+    }
+
+    .offline-title {
+      font-size: 12px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .offline-sub {
+      font-size: 11px;
+      color: var(--secondary);
+      font-weight: 700;
+    }
+
+    .claim-pill-btn {
+      background: var(--secondary);
+      color: #05050f;
+      border: none;
+      border-radius: 10px;
+      padding: 7px 12px;
+      font-size: 11px;
+      font-weight: 900;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* ========================================================
+       TAB VIEWPORT SYSTEM
+       ======================================================== */
+    .viewport {
+      flex: 1;
       overflow-y: auto;
       overflow-x: hidden;
       position: relative;
+      z-index: 10;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .tab-view {
+      display: none;
+      min-height: 100%;
+      flex-direction: column;
+      padding: 14px 16px 20px;
+      animation: tabFade 0.18s ease-out;
+    }
+
+    .tab-view.active {
+      display: flex;
+    }
+
+    @keyframes tabFade {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ========================================================
+       TAB 1: TAP SCREEN
+       ======================================================== */
+    #view-tap {
+      justify-content: space-between;
+      padding-top: 10px;
+      padding-bottom: 10px;
     }
 
     .score-container {
       text-align: center;
-      padding: 16px 20px 8px;
     }
 
     .score-label {
-      font-size: 11px;
+      font-size: 10px;
       color: var(--text-dim);
       text-transform: uppercase;
-      letter-spacing: 1.2px;
+      letter-spacing: 1.4px;
       font-weight: 700;
     }
 
     .score-val {
-      font-size: 44px;
+      font-size: 42px;
       font-weight: 900;
       letter-spacing: -1px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      margin: 2px 0;
-    }
-
-    .score-val span {
-      background: linear-gradient(135deg, #FFFFFF 20%, var(--accent) 100%);
+      line-height: 1.1;
+      margin: 2px 0 6px;
+      font-variant-numeric: tabular-nums;
+      background: linear-gradient(135deg, #FFFFFF 22%, var(--accent) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      text-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
+      text-shadow: 0 4px 20px rgba(255, 215, 0, 0.25);
     }
 
-    .passive-badge {
-      display: inline-flex;
+    .kpi-row {
+      display: flex;
+      justify-content: center;
       align-items: center;
-      gap: 5px;
-      font-size: 11px;
-      color: var(--secondary);
-      font-weight: 600;
-      background: rgba(20, 241, 149, 0.08);
-      padding: 3px 10px;
-      border-radius: 12px;
-      border: 1px solid rgba(20, 241, 149, 0.2);
+      gap: 6px;
+      flex-wrap: wrap;
     }
 
-    /* Doge Tap Area */
+    .kpi-chip {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 9px;
+      border-radius: 99px;
+      border: 1px solid var(--border);
+      background: var(--glass);
+      color: #e2e8f0;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .kpi-chip.purple {
+      background: rgba(153, 69, 255, 0.16);
+      border-color: rgba(153, 69, 255, 0.32);
+      color: #E9D5FF;
+    }
+
+    .kpi-chip.green {
+      background: rgba(20, 241, 149, 0.12);
+      border-color: rgba(20, 241, 149, 0.28);
+      color: var(--secondary);
+    }
+
+    .kpi-chip.fever {
+      background: rgba(255, 215, 0, 0.22);
+      border-color: rgba(255, 215, 0, 0.55);
+      color: #FFE58F;
+      box-shadow: 0 0 12px rgba(255, 215, 0, 0.25);
+    }
+
+    .league-progress-wrap {
+      max-width: 270px;
+      margin: 8px auto 0;
+    }
+
+    .league-progress-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: var(--text-dim);
+      font-weight: 700;
+      margin-bottom: 4px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .league-bar-bg {
+      width: 100%;
+      height: 5px;
+      border-radius: 99px;
+      background: rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+    }
+
+    .league-bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 99px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      transition: width 0.3s ease;
+    }
+
+    /* 3D Interactive Coin Stage */
     .coin-area {
       flex: 1;
       display: flex;
       justify-content: center;
       align-items: center;
       position: relative;
-      touch-action: manipulation;
+      perspective: 750px;
+      min-height: 210px;
     }
 
     .coin-wrapper {
       position: relative;
-      cursor: pointer;
+      width: 216px;
+      height: 216px;
       border-radius: 50%;
-      padding: 14px;
-      background: radial-gradient(circle, rgba(153, 69, 255, 0.35) 0%, rgba(20, 241, 149, 0.1) 60%, transparent 80%);
-      transition: transform 0.08s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      padding: 12px;
+      background: radial-gradient(circle, rgba(153, 69, 255, 0.38) 0%, rgba(20, 241, 149, 0.14) 58%, transparent 78%);
+      cursor: pointer;
+      touch-action: none;
+      transform-style: preserve-3d;
+      will-change: transform;
+      transition: transform 0.1s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
-    .coin-wrapper:active {
-      transform: scale(0.92);
+    @media (max-height: 700px) {
+      .coin-area { min-height: 160px; }
+      .coin-wrapper { width: 168px; height: 168px; padding: 9px; }
+      .score-val { font-size: 36px; }
+    }
+
+    @media (max-height: 560px) {
+      .coin-area { min-height: 125px; }
+      .coin-wrapper { width: 130px; height: 130px; padding: 7px; }
+      .score-val { font-size: 30px; }
     }
 
     .coin-img {
-      width: 210px;
-      height: 210px;
+      width: 100%;
+      height: 100%;
       border-radius: 50%;
-      box-shadow: 0 0 45px rgba(153, 69, 255, 0.6), 0 0 80px rgba(20, 241, 149, 0.3);
-      border: 4px solid rgba(255, 255, 255, 0.25);
+      object-fit: cover;
+      border: 3px solid rgba(255, 255, 255, 0.28);
+      box-shadow: 0 0 42px rgba(153, 69, 255, 0.55), 0 0 72px rgba(20, 241, 149, 0.26);
       pointer-events: none;
       display: block;
-      transition: filter 0.15s ease;
+      transition: filter 0.15s ease, box-shadow 0.25s ease, border-color 0.25s ease;
     }
 
-    .coin-wrapper:active .coin-img {
-      filter: brightness(1.2);
+    .coin-wrapper.fever .coin-img {
+      border-color: var(--accent);
+      box-shadow: 0 0 48px rgba(255, 215, 0, 0.8), 0 0 82px rgba(20, 241, 149, 0.52);
+      filter: brightness(1.08);
     }
 
-    /* Floating Particle Tap Numbers */
-    .floating-text {
+    .ripple-ring {
       position: absolute;
-      color: var(--accent);
-      font-weight: 900;
-      font-size: 28px;
+      inset: 6px;
+      border-radius: 50%;
+      border: 2px solid rgba(20, 241, 149, 0.7);
+      opacity: 0;
       pointer-events: none;
-      animation: floatUp 0.75s ease-out forwards;
-      text-shadow: 0 0 12px rgba(255, 215, 0, 0.9);
-      z-index: 100;
     }
 
-    @keyframes floatUp {
-      0% { opacity: 1; transform: translate(-50%, 0) scale(1); }
-      50% { transform: translate(-50%, -40px) scale(1.3); }
-      100% { opacity: 0; transform: translate(-50%, -85px) scale(1); }
+    .ripple-ring.pop {
+      animation: rippleOut 0.42s ease-out forwards;
     }
 
-    /* Energy Meter */
-    .energy-container {
-      padding: 0 24px 12px;
+    @keyframes rippleOut {
+      0% { transform: scale(0.92); opacity: 0.85; }
+      100% { transform: scale(1.24); opacity: 0; }
+    }
+
+    /* Pooled Floating Particles (GPU translate3d only) */
+    #float-pool {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: visible;
+      z-index: 60;
+    }
+
+    .float-pool-item {
+      position: absolute;
+      font-weight: 900;
+      font-size: 26px;
+      color: var(--accent);
+      text-shadow: 0 0 12px rgba(255, 215, 0, 0.85);
+      pointer-events: none;
+      opacity: 0;
+      will-change: transform, opacity;
+    }
+
+    .float-pool-item.active {
+      animation: floatPoolUp 0.72s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes floatPoolUp {
+      0% { opacity: 1; transform: translate3d(-50%, 0, 0) scale(0.95); }
+      35% { opacity: 1; transform: translate3d(-50%, -34px, 0) scale(1.2); }
+      100% { opacity: 0; transform: translate3d(-50%, -86px, 0) scale(0.92); }
+    }
+
+    /* Daily Boosters + Energy Bar Footer inside Tap View */
+    .tap-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 0 4px;
+    }
+
+    .quick-boost-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .quick-pill {
+      padding: 8px 10px;
+      border-radius: 13px;
+      font-size: 11.5px;
+      font-weight: 800;
+      border: 1px solid var(--border);
+      background: var(--glass);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: transform 0.1s ease, opacity 0.2s ease;
+    }
+
+    .quick-pill:active { transform: scale(0.96); }
+    .quick-pill.turbo {
+      background: linear-gradient(135deg, rgba(255, 215, 0, 0.16), rgba(255, 115, 0, 0.16));
+      border-color: rgba(255, 215, 0, 0.38);
+      color: #FFE58F;
+    }
+    .quick-pill.refill {
+      background: linear-gradient(135deg, rgba(20, 241, 149, 0.15), rgba(34, 158, 217, 0.15));
+      border-color: rgba(20, 241, 149, 0.35);
+      color: #A7F3D0;
+    }
+    .quick-pill:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
     }
 
     .energy-header {
       display: flex;
       justify-content: space-between;
-      font-size: 12px;
-      margin-bottom: 6px;
+      font-size: 11.5px;
       font-weight: 700;
+      margin-bottom: 4px;
+      font-variant-numeric: tabular-nums;
     }
 
     .energy-bar-bg {
       width: 100%;
       height: 10px;
+      border-radius: 99px;
       background: rgba(255, 255, 255, 0.08);
-      border-radius: 10px;
       overflow: hidden;
+      padding: 1px;
     }
 
     .energy-bar-fill {
       height: 100%;
       width: 100%;
-      background: linear-gradient(90deg, var(--primary), var(--secondary));
-      border-radius: 10px;
-      transition: width 0.12s ease;
-      box-shadow: 0 0 12px var(--secondary);
+      border-radius: 99px;
+      background: linear-gradient(90deg, var(--primary), #38BDF8, var(--secondary));
+      box-shadow: 0 0 10px rgba(20, 241, 149, 0.55);
+      transition: width 0.14s ease-out;
     }
 
     /* ========================================================
-       BOTTOM NAVIGATION BAR
+       SHARED CARDS, HEADERS, BUTTONS IN SUB-TABS
        ======================================================== */
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .section-head h2 {
+      font-size: 18px;
+      font-weight: 900;
+      background: linear-gradient(90deg, #fff, var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .section-sub {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-bottom: 12px;
+      line-height: 1.45;
+    }
+
+    .sub-label {
+      font-size: 10.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.9px;
+      color: var(--secondary);
+      margin: 6px 0 8px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .daily-boost-card {
+      padding: 12px;
+      border-radius: 16px;
+      background: var(--glass);
+      border: 1px solid var(--border);
+      text-align: left;
+      color: #fff;
+      cursor: pointer;
+      transition: transform 0.1s ease;
+    }
+    .daily-boost-card:active { transform: scale(0.97); }
+    .daily-boost-card.turbo {
+      background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(153, 69, 255, 0.12));
+      border-color: rgba(255, 215, 0, 0.34);
+    }
+    .daily-boost-card.refill {
+      background: linear-gradient(135deg, rgba(20, 241, 149, 0.15), rgba(34, 158, 217, 0.12));
+      border-color: rgba(20, 241, 149, 0.34);
+    }
+    .daily-boost-card:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .card-item {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 12px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 9px;
+    }
+
+    .card-item.done-card {
+      background: rgba(20, 241, 149, 0.08);
+      border-color: rgba(20, 241, 149, 0.25);
+    }
+
+    .card-info {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .card-info h4 {
+      font-size: 13.5px;
+      font-weight: 800;
+      margin-bottom: 2px;
+      color: #fff;
+    }
+
+    .card-info p {
+      font-size: 11px;
+      color: var(--text-dim);
+      line-height: 1.35;
+    }
+
+    .card-btn {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: #05050f;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 11px;
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .card-btn:disabled {
+      opacity: 0.38;
+      cursor: not-allowed;
+    }
+
+    .card-btn.done {
+      background: rgba(20, 241, 149, 0.16);
+      color: var(--secondary);
+      border: 1px solid rgba(20, 241, 149, 0.32);
+      opacity: 1;
+    }
+
+    /* 7-Day Streak Grid */
+    .streak-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 7px;
+      margin-bottom: 14px;
+    }
+
+    .streak-cell {
+      padding: 9px 6px;
+      border-radius: 13px;
+      background: var(--glass);
+      border: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .streak-cell.span-2 {
+      grid-column: span 2;
+      background: linear-gradient(135deg, rgba(153, 69, 255, 0.18), rgba(255, 215, 0, 0.12));
+      border-color: rgba(153, 69, 255, 0.35);
+    }
+
+    .streak-cell.claimed {
+      background: rgba(20, 241, 149, 0.14);
+      border-color: rgba(20, 241, 149, 0.32);
+      opacity: 0.78;
+    }
+
+    .streak-cell.ready {
+      background: linear-gradient(135deg, rgba(255, 215, 0, 0.25), rgba(255, 115, 0, 0.2));
+      border: 1.5px solid var(--accent);
+      cursor: pointer;
+      box-shadow: 0 0 16px rgba(255, 215, 0, 0.25);
+    }
+
+    .streak-day { font-size: 10px; color: var(--text-dim); font-weight: 700; }
+    .streak-amt { font-size: 12px; font-weight: 900; color: #fff; margin-top: 2px; }
+    .streak-cell.claimed .streak-amt { color: var(--secondary); }
+    .streak-cell.ready .streak-amt { color: var(--accent); }
+
+    /* Pool Box & Inputs */
+    .pool-box {
+      background: linear-gradient(135deg, rgba(153, 69, 255, 0.2), rgba(20, 241, 149, 0.15));
+      border: 1px solid rgba(20, 241, 149, 0.3);
+      border-radius: 16px;
+      padding: 14px;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .pool-title { font-size: 10.5px; color: var(--secondary); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 800; }
+    .pool-amount { font-size: 22px; font-weight: 900; color: var(--accent); margin-top: 3px; }
+    .pool-desc { font-size: 11px; color: #cbd5e1; margin-top: 3px; }
+
+    .input-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .input-field {
+      flex: 1;
+      min-width: 0;
+      background: var(--glass);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 12px;
+      padding: 11px 12px;
+      color: #fff;
+      font-size: 12px;
+      outline: none;
+    }
+    .input-field:focus { border-color: var(--secondary); }
+
+    .action-btn {
+      width: 100%;
+      background: linear-gradient(90deg, var(--secondary), var(--primary));
+      color: #05050f;
+      font-weight: 900;
+      border: none;
+      padding: 12px;
+      border-radius: 13px;
+      font-size: 13px;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      display: block;
+      margin-bottom: 9px;
+    }
+    .action-btn:active { transform: scale(0.98); }
+
+    .ca-box {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .ca-text {
+      font-family: monospace;
+      font-size: 10.5px;
+      color: var(--secondary);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* Leaderboard List */
+    .my-rank-banner {
+      background: linear-gradient(90deg, rgba(20, 241, 149, 0.14), rgba(153, 69, 255, 0.14));
+      border: 1px solid rgba(20, 241, 149, 0.3);
+      border-radius: 15px;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .my-rank-highlight {
+      border-color: rgba(20, 241, 149, 0.5) !important;
+      background: rgba(20, 241, 149, 0.1) !important;
+    }
+
+    /* ========================================================
+       FLOATING GLASS PILL BOTTOM NAV
+       ======================================================== */
+    .bottom-nav-wrap {
+      padding: 6px 12px max(12px, env(safe-area-inset-bottom, 12px));
+      position: relative;
+      z-index: 40;
+      background: linear-gradient(to top, rgba(5, 5, 15, 0.95) 60%, transparent);
+    }
+
     .bottom-nav {
-      background: #0b0b18;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(16, 18, 38, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      border-radius: 20px;
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      padding: 10px 8px max(14px, env(safe-area-inset-bottom, 14px));
-      z-index: 1000;
-      position: relative;
-      box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.5);
+      gap: 4px;
+      padding: 6px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.65);
     }
 
     .nav-btn {
@@ -419,525 +1009,390 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 4px;
+      gap: 3px;
       cursor: pointer;
       font-weight: 700;
-      padding: 6px 2px;
-      border-radius: 12px;
-      transition: all 0.15s ease;
+      padding: 7px 2px;
+      border-radius: 14px;
+      transition: background 0.15s ease, color 0.15s ease;
     }
 
-    .nav-btn svg {
-      width: 22px;
-      height: 22px;
-      fill: currentColor;
-      transition: transform 0.15s ease;
+    .nav-btn span.nav-ico {
+      font-size: 16px;
+      line-height: 1.1;
     }
 
     .nav-btn.active {
       color: var(--secondary);
-      background: rgba(20, 241, 149, 0.1);
-    }
-
-    .nav-btn.active svg {
-      transform: scale(1.1);
-    }
-
-    /* ========================================================
-       MODALS
-       ======================================================== */
-    .modal {
-      display: none;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(8, 8, 16, 0.98);
-      backdrop-filter: blur(14px);
-      z-index: 500;
-      flex-direction: column;
-      padding: 20px 20px 24px;
-      animation: fadeIn 0.2s ease;
-      overflow-y: auto;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(12px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-    }
-
-    .modal-header h2 {
-      font-size: 19px;
-      font-weight: 800;
-      background: linear-gradient(90deg, #FFFFFF, var(--secondary));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .modal-close {
-      background: rgba(255, 255, 255, 0.1);
-      border: none;
-      color: #fff;
-      font-size: 20px;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .card-item {
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 13px 14px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-      transition: background 0.15s ease;
-    }
-
-    .card-item:hover {
-      background: rgba(255, 255, 255, 0.07);
-    }
-
-    .card-info h4 {
-      font-size: 14px;
-      margin-bottom: 3px;
-      font-weight: 700;
-    }
-
-    .card-info p {
-      font-size: 11px;
-      color: var(--text-dim);
-    }
-
-    .card-btn {
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      color: #000;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 10px;
-      font-size: 12px;
-      font-weight: 800;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: opacity 0.15s;
-    }
-
-    .card-btn:disabled {
-      opacity: 0.35;
-      cursor: not-allowed;
-    }
-
-    .input-field {
-      width: 100%;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 12px;
-      padding: 13px;
-      color: #fff;
-      font-size: 13px;
-      margin-bottom: 12px;
-      outline: none;
-    }
-
-    .input-field:focus {
-      border-color: var(--secondary);
-    }
-
-    .action-btn {
-      width: 100%;
-      background: linear-gradient(90deg, var(--secondary), var(--primary));
-      color: #000;
-      font-weight: 800;
-      border: none;
-      padding: 13px;
-      border-radius: 12px;
-      font-size: 14px;
-      cursor: pointer;
-      text-align: center;
-      text-decoration: none;
-      display: block;
-      margin-bottom: 10px;
-      transition: transform 0.1s ease;
-    }
-
-    .action-btn:active {
-      transform: scale(0.98);
-    }
-
-    .pool-box {
-      background: linear-gradient(135deg, rgba(153, 69, 255, 0.15), rgba(20, 241, 149, 0.15));
-      border: 1px solid rgba(20, 241, 149, 0.3);
-      border-radius: 16px;
-      padding: 16px;
-      text-align: center;
-      margin-bottom: 16px;
-    }
-
-    .pool-title {
-      font-size: 11px;
-      color: var(--text-dim);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 4px;
-    }
-
-    .pool-amount {
-      font-size: 24px;
-      font-weight: 900;
-      color: var(--accent);
-    }
-
-    .pool-desc {
-      font-size: 11px;
-      color: var(--secondary);
-      margin-top: 4px;
+      background: rgba(20, 241, 149, 0.13);
     }
   </style>
 </head>
 <body>
 
   <div class="app-container">
+    <div class="stars-layer"></div>
 
-    <!-- ========================================================
-         TELEGRAM ONLY ENFORCEMENT GATE
-         ======================================================== -->
+    <!-- Custom Non-Blocking Toast -->
+    <div id="toast-pill" class="toast-pill">⚡ Notification</div>
+
+    <!-- TELEGRAM EXCLUSIVE GATE -->
     <div id="telegram-gate">
-      <img src="https://files.catbox.moe/480s3q.jpg" class="gate-logo" alt="DogeMoon">
+      <img class="gate-logo logo-src" alt="DogeMoon" />
       <div class="gate-badge">✈️ TELEGRAM EXCLUSIVE</div>
       <div class="gate-title">Play in Telegram</div>
       <div class="gate-desc">
-        DogeMoon Tap-to-Earn & the <strong>30,000,000 $DMOON</strong> Season 1 Airdrop Mining is exclusive to the Telegram Mini App.
+        DogeMoon Tap-to-Earn &amp; the <strong>30,000,000 $DMOON</strong> Season 1 Airdrop Pool are exclusive to the Telegram Mini App.
       </div>
-
-      <a id="gate-tg-link" href="https://t.me/DogeMoonTapBot" target="_blank" class="tg-btn">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.75-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
-        </svg>
-        Launch Telegram Mini App
+      <a href="https://t.me/DogeMoonTapBot" target="_blank" class="tg-btn">
+        🚀 Launch Telegram Mini App
       </a>
-
-      <button class="dev-bypass-btn" onclick="bypassTelegramGate()">
-        Preview Mode (Dev Test)
-      </button>
+      <button class="dev-bypass-btn" onclick="bypassTelegramGate()">Preview Mode (Dev Test)</button>
     </div>
 
-    <!-- Top Header -->
+    <!-- TOP HUD HEADER -->
     <div class="header">
-      <div class="header-token">
-        <img src="https://files.catbox.moe/480s3q.jpg" class="header-logo" alt="DogeMoon">
-        <div class="header-title">
-          <h1>DogeMoon <span class="tg-verified-pill">TMA</span></h1>
-          <div class="player-username" id="player-tg-name">@telegram_user</div>
+      <div class="player-meta">
+        <div class="avatar-wrap">
+          <img class="header-logo logo-src" alt="DogeMoon" />
+          <span class="avatar-badge" id="hud-league-ico">🥉</span>
+        </div>
+        <div class="title-stack">
+          <div class="name-row">
+            <span class="player-name" id="player-tg-name">Cadet</span>
+            <span class="league-pill" id="hud-league-name">Lunar Cadet</span>
+          </div>
+          <div class="sub-row">
+            <span>Rank <span class="sub-rank" id="hud-global-rank">#--</span></span>
+            <span>•</span>
+            <span class="sub-streak" id="hud-streak">🔥 Day 1</span>
+          </div>
         </div>
       </div>
+
       <div class="header-actions">
-        <button class="icon-btn" id="btn-leaderboard-top" onclick="openModal('leaderboard-modal')" title="Leaderboard">🏆</button>
+        <span class="sync-chip" id="sync-status-chip">☁️ Sync</span>
         <button class="icon-btn" id="sfx-btn" onclick="toggleSFX()" title="Sound FX">🔊</button>
-        <button class="icon-btn" onclick="openModal('daily-modal')" title="Daily Bonus">🎁</button>
+        <button class="icon-btn" onclick="switchTab('airdrop')" title="Daily Bonus & Airdrop">
+          🎁<span class="notif-dot" id="daily-dot"></span>
+        </button>
       </div>
     </div>
 
-    <!-- Main Tap View -->
-    <div class="view-content" id="main-view">
-      <div class="score-container">
-        <div class="score-label">Mined $DMOON Balance</div>
-        <div class="score-val">
-          <span id="score">0</span>
-        </div>
-        <div class="passive-badge" id="passive-rate-badge">
-          ⚡ +<span id="passive-rate">0</span> DMOON / sec (Auto Miner)
-        </div>
-      </div>
-
-      <!-- Doge Coin Button -->
-      <div class="coin-area" id="coin-area">
-        <div class="coin-wrapper" id="coin-btn">
-          <img src="https://files.catbox.moe/480s3q.jpg" class="coin-img" alt="Tap DogeMoon">
-        </div>
-      </div>
-
-      <!-- Energy Gauge -->
-      <div class="energy-container">
-        <div class="energy-header">
-          <span>⚡ Energy</span>
-          <span id="energy-text">1000 / 1000</span>
-        </div>
-        <div class="energy-bar-bg">
-          <div class="energy-bar-fill" id="energy-fill" style="width: 100%;"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Bottom Navigation Bar (5 Main Tabs) -->
-    <div class="bottom-nav">
-      <button class="nav-btn active" id="tab-tap" onclick="switchNav('tap')">
-        <svg viewBox="0 0 24 24"><path d="M9 11.24V7.5C9 6.12 10.12 5 11.5 5S14 6.12 14 7.5v3.74c1.21-.81 2-2.18 2-3.74C16 5.01 13.99 3 11.5 3S7 5.01 7 7.5c0 1.56.79 2.93 2 3.74zM18.84 15.25l-4.71-3.77c-.38-.3-.87-.48-1.38-.48h-1.5v3h1.5l3.86 3.09c.47.38.74.95.74 1.55v2.36h-8.7V17h-2v4c0 .55.45 1 1 1h10.7c.7 0 1.34-.37 1.69-.97l.8-1.37c.33-.56.32-1.26-.01-1.81l-1.99-2.6z"/></svg>
-        Tap
-      </button>
-
-      <button class="nav-btn" id="tab-boost" onclick="openModal('boost-modal')">
-        <svg viewBox="0 0 24 24"><path d="M12 2.5s4.5 4.5 4.5 9a4.5 4.5 0 0 1-9 0c0-4.5 4.5-9 4.5-9z"/></svg>
-        Boosts
-      </button>
-
-      <button class="nav-btn" id="tab-tasks" onclick="openModal('tasks-modal')">
-        <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-        Tasks
-      </button>
-
-      <button class="nav-btn" id="tab-airdrop" onclick="openModal('airdrop-modal')">
-        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-        Airdrop
-      </button>
-
-      <button class="nav-btn" id="tab-leaderboard" onclick="openModal('leaderboard-modal')">
-        <svg viewBox="0 0 24 24"><path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0 0 11 15.9V19H7v2h10v-2h-4v-3.1c1.8-.45 3.19-1.93 3.61-3.96C19.08 11.63 21 9.55 21 7V6c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z"/></svg>
-        Rank 🏆
-      </button>
-    </div>
-
-    <!-- Boost Modal -->
-    <div class="modal" id="boost-modal">
-      <div class="modal-header">
-        <h2>🚀 Doge Boosters</h2>
-        <button class="modal-close" onclick="closeModal('boost-modal')">&times;</button>
-      </div>
-
-      <div class="card-item">
-        <div class="card-info">
-          <h4>⚡ Multitap</h4>
-          <p>+1 DMOON per tap (Level <span id="multitap-lvl">1</span>)</p>
-        </div>
-        <button class="card-btn" id="btn-multitap" onclick="buyMultitap()">Buy 100</button>
-      </div>
-
-      <div class="card-item">
-        <div class="card-info">
-          <h4>🤖 Auto-Doge Miner</h4>
-          <p>+5 DMOON/sec idle mining (Lvl <span id="autobot-lvl">0</span>)</p>
-        </div>
-        <button class="card-btn" id="btn-autobot" onclick="buyAutoMiner()">Buy 500</button>
-      </div>
-
-      <div class="card-item">
-        <div class="card-info">
-          <h4>🔋 Energy Refill</h4>
-          <p>Instantly refuels energy gauge to max</p>
-        </div>
-        <button class="card-btn" id="btn-refill" onclick="refillEnergy()">Buy 250</button>
-      </div>
-
-      <div class="card-item">
-        <div class="card-info">
-          <h4>📦 Energy Expansion</h4>
-          <p>+500 Maximum Energy Capacity</p>
-        </div>
-        <button class="card-btn" id="btn-expand" onclick="buyEnergyExpansion()">Buy 1,000</button>
-      </div>
-    </div>
-
-    <!-- Community Tasks Modal -->
-    <div class="modal" id="tasks-modal">
-      <div class="modal-header">
-        <h2>📋 Telegram & Social Quests</h2>
-        <button class="modal-close" onclick="closeModal('tasks-modal')">&times;</button>
-      </div>
-      <p style="font-size: 12px; color: var(--text-dim); margin-bottom: 16px;">
-        Complete Telegram & community quests to earn huge bonus $DMOON tokens credited immediately to your balance!
-      </p>
-
-      <div class="card-item">
-        <div class="card-info">
-          <h4>✈️ Join Telegram Channel</h4>
-          <p>+5,000 $DMOON</p>
-        </div>
-        <button class="card-btn" id="task-btn-tgchannel" onclick="doTask('tgchannel', 'https://t.me/DogeMoon_Sol', 5000)">Claim</button>
-      </div>
-
-      <div class="card-item">
-        <div class="card-info">
-          <h4>💬 Join Telegram Group</h4>
-          <p>+5,000 $DMOON</p>
-        </div>
-        <button class="card-btn" id="task-btn-tggroup" onclick="doTask('tggroup', 'https://t.me/DogeMoon_Sol_Chat', 5000)">Claim</button>
-      </div>
-
-      <div class="card-item">
-        <div class="card-info">
-          <h4>🐦 Follow @DogeMoon on X</h4>
-          <p>+2,500 $DMOON</p>
-        </div>
-        <button class="card-btn" id="task-btn-twitter" onclick="doTask('twitter', 'https://twitter.com/search?q=%24DMOON', 2500)">Claim</button>
-      </div>
-
-      <div class="card-item">
-        <div class="card-info">
-          <h4>🔥 Verify 700M Burn Proof</h4>
-          <p>+2,000 $DMOON</p>
-        </div>
-        <button class="card-btn" id="task-btn-burn" onclick="doTask('burn', 'https://solscan.io/tx/4mZxEthUGkwAV2JaJj4362PnPTw87iGMyjnSYp8N7zFZRNEYG3w4frgHEgpqrCDScx1oKzf7F2Mf36AsYdu6MSK3', 2000)">Claim</button>
-      </div>
-
-      <div class="card-item">
-        <div class="card-info">
-          <h4>📊 View Live Chart</h4>
-          <p>+1,000 $DMOON</p>
-        </div>
-        <button class="card-btn" id="task-btn-dex" onclick="doTask('dex', 'https://dexscreener.com/solana/BBXYnoxijWriwwt4RbWQdgBugf8NnUWehipiipGEJ8zT", 1000)">Claim</button>
-      </div>
-    </div>
-
-    <!-- Airdrop Modal -->
-    <div class="modal" id="airdrop-modal">
-      <div class="modal-header">
-        <h2>🎁 30M Community Airdrop</h2>
-        <button class="modal-close" onclick="closeModal('airdrop-modal')">&times;</button>
-      </div>
-
-      <div class="pool-box">
-        <div class="pool-title">Season 1 Telegram Mining Pool</div>
-        <div class="pool-amount">30,000,000 $DMOON</div>
-        <div class="pool-desc">🔥 700M Burned | 30M Reserved for Telegram Tappers!</div>
-      </div>
-
-      <p style="font-size: 13px; color: var(--text-dim); margin-bottom: 14px;">
-        Register your Solana wallet address below. At the end of Season 1, real on-chain $DMOON will be airdropped straight to top Telegram miners!
-      </p>
-
-      <div style="display:flex; gap:10px; margin-bottom:14px;">
-        <button class="action-btn" style="flex:1; margin-bottom:0;" onclick="openModal('leaderboard-modal')">🏆 Leaderboard</button>
-        <button class="action-btn" style="flex:1; margin-bottom:0; background:rgba(20,241,149,0.15); border:1px solid var(--secondary); color:var(--secondary);" onclick="openModal('trade-modal')">📈 Chart & Buy</button>
-      </div>
-      <input type="text" id="wallet-input" class="input-field" placeholder="Paste Solana address (e.g. kwQQ...VNk)">
-      <button class="action-btn" onclick="saveWallet()">Save Wallet Address</button>
-      <div id="wallet-status" style="font-size: 12px; color: var(--secondary); margin-bottom: 16px; text-align: center; font-weight: 700;"></div>
-
-      <button class="action-btn" style="background: rgba(34, 158, 217, 0.2); color: #229ED9; border: 1px solid #229ED9;" onclick="shareTelegram()">
-        ✈️ Invite Friends via Telegram (+10,000)
-      </button>
-    </div>
-
-    <!-- Leaderboard Modal -->
-    <div class="modal" id="leaderboard-modal">
-      <div class="modal-header">
-        <h2>🏆 Live Leaderboard</h2>
-        <button class="modal-close" onclick="closeModal('leaderboard-modal')">&times;</button>
-      </div>
-
-      <div class="pool-box" style="margin-bottom: 12px; background: linear-gradient(135deg, rgba(153,69,255,0.22), rgba(20,241,149,0.15)); border: 1px solid rgba(255,255,255,0.12);">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-          <div style="font-size: 11px; text-transform: uppercase; color: var(--secondary); font-weight: 800; letter-spacing: 0.5px;">Season 1 Airdrop Pool</div>
-          <div style="font-size: 12px; color: var(--accent); font-weight: 800;">30,000,000 $DMOON</div>
-        </div>
-        <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--text-dim);">
-          <span>Total Community Mined:</span>
-          <span id="lb-total-mined" style="color: #fff; font-weight: 700;">Loading...</span>
-        </div>
-        <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--text-dim); margin-top: 4px;">
-          <span>Active Miners:</span>
-          <span id="lb-total-miners" style="color: var(--secondary); font-weight: 700;">17+</span>
-        </div>
-      </div>
-
-      <!-- Player Personal Rank Banner -->
-      <div style="background: rgba(255,255,255,0.04); border: 1px solid var(--card-border); border-radius: 14px; padding: 12px 14px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center;">
+    <!-- OFFLINE AUTO-MINER VAULT BANNER -->
+    <div class="offline-banner" id="offline-banner">
+      <div class="offline-left">
+        <span style="font-size: 20px;">🛸</span>
         <div>
-          <div style="font-size: 11px; color: var(--text-dim); text-transform: uppercase;">Your Current Rank</div>
-          <div id="lb-my-rank" style="font-size: 20px; font-weight: 900; color: var(--secondary);">#--</div>
-        </div>
-        <div style="text-align: right;">
-          <div style="font-size: 11px; color: var(--text-dim); text-transform: uppercase;">Est. Airdrop Allocation</div>
-          <div id="lb-my-share" style="font-size: 14px; font-weight: 800; color: var(--accent);">-- $DMOON</div>
+          <div class="offline-title">Auto-Miner Earned Offline!</div>
+          <div class="offline-sub">+<span id="offline-amt">0</span> $DMOON ready to claim</div>
         </div>
       </div>
-
-      <div style="font-size: 11px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; margin-bottom: 8px; display: flex; justify-content: space-between; padding: 0 4px;">
-        <span>Rank & Cadet</span>
-        <span>Mined Balance</span>
-      </div>
-
-      <!-- Dynamic Miners List -->
-      <div id="leaderboard-list" style="max-height: 280px; overflow-y: auto; padding-right: 2px;">
-        <div style="text-align: center; padding: 25px; color: var(--text-dim);">
-          Connecting to Supabase Cloud...
-        </div>
-      </div>
-
-      <button class="action-btn" style="margin-top: 14px; background: rgba(153,69,255,0.18); border: 1px solid var(--primary); color: #fff; font-weight: 700;" onclick="loadLeaderboard()">
-        🔄 Refresh Rankings
-      </button>
+      <button class="claim-pill-btn" onclick="claimOfflineVault()">Claim</button>
     </div>
 
-    <!-- Trade Modal -->
-    <div class="modal" id="trade-modal">
-      <div class="modal-header">
-        <h2>📈 Trade & Chart</h2>
-        <button class="modal-close" onclick="closeModal('trade-modal')">&times;</button>
-      </div>
+    <!-- MAIN TAB VIEWPORT -->
+    <div class="viewport">
 
-      <div class="pool-box" style="margin-bottom: 16px;">
-        <div class="pool-title">Token Contract Address</div>
-        <div style="font-family: monospace; font-size: 11px; color: var(--secondary); word-break: break-all; margin-top: 6px;">
-          BBXYnoxijWriwwt4RbWQdgBugf8NnUWehipiipGEJ8zT
+      <!-- TAB 1: TAP -->
+      <div class="tab-view active" id="view-tap">
+        <div class="score-container">
+          <div class="score-label">Mined $DMOON Balance</div>
+          <div class="score-val" id="score">0</div>
+
+          <div class="kpi-row">
+            <span class="kpi-chip purple">👆 +<span id="hud-tap-val">1</span>/tap</span>
+            <span class="kpi-chip green">🤖 +<span id="passive-rate">0</span>/sec</span>
+            <span class="kpi-chip" id="combo-badge">⚡ x1.0</span>
+          </div>
+
+          <div class="league-progress-wrap">
+            <div class="league-progress-meta">
+              <span id="league-prog-left">🥉 Lunar Cadet</span>
+              <span id="league-prog-right">0 / 2,500 → 🥈</span>
+            </div>
+            <div class="league-bar-bg">
+              <div class="league-bar-fill" id="league-bar-fill"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3D Coin Tapper Stage -->
+        <div class="coin-area" id="coin-area">
+          <div class="coin-wrapper" id="coin-btn">
+            <img class="coin-img logo-src" alt="Tap DogeMoon" />
+            <div class="ripple-ring" id="ripple-ring"></div>
+          </div>
+          <div id="float-pool"></div>
+        </div>
+
+        <!-- Daily Quick Boosts + Energy Gauge -->
+        <div class="tap-controls">
+          <div class="quick-boost-row">
+            <button class="quick-pill turbo" id="btn-quick-turbo" onclick="activateDailyTurbo()">
+              <span>🚀 Turbo 5x</span>
+              <span id="quick-turbo-left">(3/3)</span>
+            </button>
+            <button class="quick-pill refill" id="btn-quick-refill" onclick="useDailyRefill()">
+              <span>🔋 Full Energy</span>
+              <span id="quick-refill-left">(3/3)</span>
+            </button>
+          </div>
+
+          <div>
+            <div class="energy-header">
+              <span style="color: var(--accent);">⚡ Energy</span>
+              <span id="energy-text">1000 / 1000</span>
+            </div>
+            <div class="energy-bar-bg">
+              <div class="energy-bar-fill" id="energy-fill"></div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <a href="https://raydium.io/swap/?inputMint=sol&outputMint=BBXYnoxijWriwwt4RbWQdgBugf8NnUWehipiipGEJ8zT" target="_blank" class="action-btn">
-        🦄 Trade on Raydium (0% Tax)
-      </a>
+      <!-- TAB 2: BOOSTS -->
+      <div class="tab-view" id="view-boosts">
+        <div class="section-head">
+          <h2>🚀 Doge Boosters</h2>
+          <span style="font-size: 12px; font-weight: 800; color: var(--accent);" id="boost-balance">0 $DMOON</span>
+        </div>
 
-      <a href="https://dexscreener.com/solana/BBXYnoxijWriwwt4RbWQdgBugf8NnUWehipiipGEJ8zT" target="_blank" class="action-btn" style="background: #111; color: #fff; border: 1px solid rgba(255,255,255,0.2);">
-        📊 View DexScreener Chart
-      </a>
+        <div class="sub-label">Free Daily Boosters (Reset Every Day)</div>
+        <div class="grid-2">
+          <button class="daily-boost-card turbo" id="card-daily-turbo" onclick="activateDailyTurbo()">
+            <div style="font-size: 20px;">🚀</div>
+            <div style="font-size: 13px; font-weight: 800; margin-top: 4px;">5x Rocket Turbo</div>
+            <div style="font-size: 11px; color: var(--accent);" id="card-turbo-left">3 / 3 left today</div>
+          </button>
+          <button class="daily-boost-card refill" id="card-daily-refill" onclick="useDailyRefill()">
+            <div style="font-size: 20px;">🔋</div>
+            <div style="font-size: 13px; font-weight: 800; margin-top: 4px;">Full Tank Refill</div>
+            <div style="font-size: 11px; color: var(--secondary);" id="card-refill-left">3 / 3 left today</div>
+          </button>
+        </div>
 
-      <a href="https://solscan.io/tx/4mZxEthUGkwAV2JaJj4362PnPTw87iGMyjnSYp8N7zFZRNEYG3w4frgHEgpqrCDScx1oKzf7F2Mf36AsYdu6MSK3" target="_blank" class="action-btn" style="background: rgba(255,68,68,0.15); color: #FF4444; border: 1px solid #FF4444;">
-        🔥 View 700M Burn Tx on Solscan
-      </a>
+        <div class="sub-label">Permanent Mining Upgrades</div>
+
+        <div class="card-item">
+          <div class="card-info">
+            <h4>⚡ Multitap (Lvl <span id="multitap-lvl">1</span>)</h4>
+            <p>+1 base $DMOON per finger tap</p>
+          </div>
+          <button class="card-btn" id="btn-multitap" onclick="buyMultitap()">Buy 100</button>
+        </div>
+
+        <div class="card-item">
+          <div class="card-info">
+            <h4>🤖 Auto-Doge Miner (Lvl <span id="autobot-lvl">0</span>)</h4>
+            <p>+5 $DMOON/sec (mines up to 3h offline!)</p>
+          </div>
+          <button class="card-btn" id="btn-autobot" onclick="buyAutoMiner()">Buy 500</button>
+        </div>
+
+        <div class="card-item">
+          <div class="card-info">
+            <h4>🔋 Energy Expansion (Lvl <span id="expand-lvl">1</span>)</h4>
+            <p>+500 Max Energy tank capacity</p>
+          </div>
+          <button class="card-btn" id="btn-expand" onclick="buyEnergyExpansion()">Buy 1,000</button>
+        </div>
+
+        <div class="card-item">
+          <div class="card-info">
+            <h4>⚡ Turbo Charger (Lvl <span id="regen-lvl">1</span>)</h4>
+            <p>+1 Energy/sec faster recharge rate (Now +<span id="regen-rate-lbl">3</span>/s)</p>
+          </div>
+          <button class="card-btn" id="btn-regen" onclick="buyRegenUpgrade()">Buy 750</button>
+        </div>
+      </div>
+
+      <!-- TAB 3: QUESTS -->
+      <div class="tab-view" id="view-quests">
+        <div class="section-head">
+          <h2>✅ Community Quests</h2>
+          <span style="font-size: 12px; font-weight: 800; color: var(--secondary);" id="quest-progress-lbl">0 / 6 Done</span>
+        </div>
+        <p class="section-sub">
+          Complete official Telegram &amp; social missions to earn bonus $DMOON tokens toward your Season 1 Airdrop allocation.
+        </p>
+
+        <div class="card-item" id="task-card-tgchannel">
+          <div class="card-info">
+            <h4>✈️ Join Telegram Channel</h4>
+            <p>+5,000 $DMOON</p>
+          </div>
+          <button class="card-btn" id="task-btn-tgchannel" onclick="doTask('tgchannel', 'https://t.me/DogeMoon_Sol', 5000)">Claim</button>
+        </div>
+
+        <div class="card-item" id="task-card-tggroup">
+          <div class="card-info">
+            <h4>💬 Join Telegram Group</h4>
+            <p>+5,000 $DMOON</p>
+          </div>
+          <button class="card-btn" id="task-btn-tggroup" onclick="doTask('tggroup', 'https://t.me/DogeMoon_Sol_Chat', 5000)">Claim</button>
+        </div>
+
+        <div class="card-item" id="task-card-instagram">
+          <div class="card-info">
+            <h4>📸 Follow @dogemoon_sol on Instagram</h4>
+            <p>+3,000 $DMOON • Official Account</p>
+          </div>
+          <button class="card-btn" id="task-btn-instagram" onclick="doTask('instagram', 'https://www.instagram.com/dogemoon_sol/', 3000)">Claim</button>
+        </div>
+
+        <div class="card-item" id="task-card-twitter">
+          <div class="card-info">
+            <h4>𝕏 Engage with $DMOON on X</h4>
+            <p>+2,500 $DMOON</p>
+          </div>
+          <button class="card-btn" id="task-btn-twitter" onclick="doTask('twitter', 'https://x.com/search?q=%24DMOON', 2500)">Claim</button>
+        </div>
+
+        <div class="card-item" id="task-card-burn">
+          <div class="card-info">
+            <h4>🔥 Verify 700M On-Chain Burn</h4>
+            <p>+2,000 $DMOON • Solscan Tx</p>
+          </div>
+          <button class="card-btn" id="task-btn-burn" onclick="doTask('burn', 'https://solscan.io/tx/4mZxEthUGkwAV2JaJj4362PnPTw87iGMyjnSYp8N7zFZRNEYG3w4frgHEgpqrCDScx1oKzf7F2Mf36AsYdu6MSK3', 2000)">Claim</button>
+        </div>
+
+        <div class="card-item" id="task-card-dex">
+          <div class="card-info">
+            <h4>📊 Check DexScreener Live Chart</h4>
+            <p>+1,000 $DMOON</p>
+          </div>
+          <button class="card-btn" id="task-btn-dex" onclick="doTask('dex', 'https://dexscreener.com/solana/BBXYnoxijWriwwt4RbWQdgBugf8NnUWehipiipGEJ8zT', 1000)">Claim</button>
+        </div>
+      </div>
+
+      <!-- TAB 4: AIRDROP & 7-DAY STREAK -->
+      <div class="tab-view" id="view-airdrop">
+        <div class="pool-box">
+          <div class="pool-title">Season 1 Airdrop Mining Pool</div>
+          <div class="pool-amount">30,000,000 $DMOON</div>
+          <div class="pool-desc">🔥 700M Supply Burned • On-Chain Snapshot Payout</div>
+        </div>
+
+        <!-- 7-Day Daily Streak Calendar -->
+        <div class="sub-label" style="display: flex; justify-content: space-between; align-items: center;">
+          <span>📅 7-Day Miner Streak</span>
+          <span id="daily-timer-lbl" style="color: var(--accent); font-size: 10px;">Ready!</span>
+        </div>
+        <div class="streak-grid" id="streak-grid"></div>
+
+        <!-- Solana Wallet Instant Sync -->
+        <div class="sub-label">👛 Solana Payout Wallet</div>
+        <div class="input-row">
+          <input type="text" id="wallet-input" class="input-field" placeholder="Paste Solana address (e.g. kwQQ...VNk)" />
+          <button class="card-btn" onclick="saveWallet()">Save</button>
+        </div>
+        <div id="wallet-status" style="font-size: 11.5px; color: var(--secondary); margin-bottom: 12px; font-weight: 700;"></div>
+
+        <!-- Invite Friends -->
+        <button class="action-btn" style="background: rgba(34, 158, 217, 0.2); color: #38BDF8; border: 1px solid #229ED9;" onclick="shareTelegram()">
+          ✈️ Invite Friends via Telegram (+10,000 Bonus Copy)
+        </button>
+
+        <!-- Token Info & Quick Trade Links -->
+        <div class="sub-label">🪙 Official Token &amp; Chart</div>
+        <div class="ca-box">
+          <span class="ca-text">CA: BBXYnoxijWriwwt4RbWQdgBugf8NnUWehipiipGEJ8zT</span>
+          <button class="card-btn" style="padding: 5px 10px; font-size: 11px;" onclick="copyCA()">Copy</button>
+        </div>
+
+        <div class="grid-2" style="margin-bottom: 0;">
+          <a href="https://raydium.io/swap/?inputMint=sol&outputMint=BBXYnoxijWriwwt4RbWQdgBugf8NnUWehipiipGEJ8zT" target="_blank" class="action-btn" style="margin-bottom: 0;">
+            🦄 Buy Raydium
+          </a>
+          <a href="https://dexscreener.com/solana/BBXYnoxijWriwwt4RbWQdgBugf8NnUWehipiipGEJ8zT" target="_blank" class="action-btn" style="margin-bottom: 0; background: #141628; color: #fff; border: 1px solid var(--border);">
+            📊 DexScreener
+          </a>
+        </div>
+      </div>
+
+      <!-- TAB 5: LIVE LEADERBOARD -->
+      <div class="tab-view" id="view-rank">
+        <div class="section-head">
+          <h2>🏆 Live Leaderboard</h2>
+          <button class="card-btn" style="padding: 6px 11px; font-size: 11px;" onclick="loadLeaderboard()">🔄 Refresh</button>
+        </div>
+
+        <div class="pool-box" style="text-align: left; padding: 12px 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+            <span class="pool-title">Season 1 Community Pool</span>
+            <span style="font-size: 12px; font-weight: 900; color: var(--accent);">30,000,000 $DMOON</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 11.5px; color: var(--text-dim);">
+            <span>Total Community Mined:</span>
+            <span id="lb-total-mined" style="color: #fff; font-weight: 800;">Loading...</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 11.5px; color: var(--text-dim); margin-top: 3px;">
+            <span>Active Miners:</span>
+            <span id="lb-total-miners" style="color: var(--secondary); font-weight: 800;">--</span>
+          </div>
+        </div>
+
+        <div class="my-rank-banner">
+          <div>
+            <div style="font-size: 10px; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Your Current Rank</div>
+            <div id="lb-my-rank" style="font-size: 20px; font-weight: 900; color: var(--secondary);">#--</div>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 10px; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Est. Airdrop Allocation</div>
+            <div id="lb-my-share" style="font-size: 14px; font-weight: 900; color: var(--accent);">-- $DMOON</div>
+          </div>
+        </div>
+
+        <div style="font-size: 10.5px; font-weight: 800; color: var(--text-dim); text-transform: uppercase; margin-bottom: 8px; display: flex; justify-content: space-between; padding: 0 4px;">
+          <span>Rank &amp; Astronaut</span>
+          <span>Mined Balance</span>
+        </div>
+
+        <div id="leaderboard-list">
+          <div style="text-align: center; padding: 24px; color: var(--text-dim); font-size: 12px;">
+            Connecting to Supabase Cloud...
+          </div>
+        </div>
+      </div>
+
     </div>
 
-    <!-- Daily Streak Modal -->
-    <div class="modal" id="daily-modal">
-      <div class="modal-header">
-        <h2>🎁 Daily Miner Reward</h2>
-        <button class="modal-close" onclick="closeModal('daily-modal')">&times;</button>
+    <!-- FLOATING GLASS PILL BOTTOM NAV -->
+    <div class="bottom-nav-wrap">
+      <div class="bottom-nav">
+        <button class="nav-btn active" id="nav-tap" onclick="switchTab('tap')">
+          <span class="nav-ico">👆</span><span>Tap</span>
+        </button>
+        <button class="nav-btn" id="nav-boosts" onclick="switchTab('boosts')">
+          <span class="nav-ico">🚀</span><span>Boosts</span>
+        </button>
+        <button class="nav-btn" id="nav-quests" onclick="switchTab('quests')">
+          <span class="nav-ico">✅</span><span>Quests</span>
+        </button>
+        <button class="nav-btn" id="nav-airdrop" onclick="switchTab('airdrop')">
+          <span class="nav-ico">🎁</span><span>Airdrop</span>
+        </button>
+        <button class="nav-btn" id="nav-rank" onclick="switchTab('rank')">
+          <span class="nav-ico">🏆</span><span>Rank</span>
+        </button>
       </div>
-
-      <div class="pool-box">
-        <div class="pool-title">Current Streak</div>
-        <div class="pool-amount" id="streak-days">Day 1</div>
-        <div class="pool-desc">Come back every 24 hours to claim huge multiplier rewards!</div>
-      </div>
-
-      <button class="action-btn" id="claim-daily-btn" onclick="claimDailyBonus()">
-        Claim +1,000 $DMOON
-      </button>
-      <div id="daily-status" style="font-size: 12px; color: var(--text-dim); text-align: center; margin-top: 8px;"></div>
     </div>
 
   </div>
 
   <script>
     // ==========================================
-    // TELEGRAM MINI APP INITIALIZATION
+    // INSTANT 0ms EMBEDDED LOGO ASSET
+    // ==========================================
+    const LOGO_DATA = "data:image/jpeg;base64,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";
+    document.querySelectorAll('.logo-src').forEach(img => { img.src = LOGO_DATA; });
+
+    // ==========================================
+    // TELEGRAM MINI APP SDK & GATE
     // ==========================================
     const tg = window.Telegram?.WebApp;
     const isInsideTelegram = !!(tg && (tg.initData || window.location.hash.includes('tgWebAppData')));
-
-    // Check if running in Telegram or external browser
     const gateEl = document.getElementById('telegram-gate');
     const playerTgNameEl = document.getElementById('player-tg-name');
 
@@ -945,20 +1400,21 @@
       try {
         tg.ready();
         tg.expand();
-        if (tg.setHeaderColor) tg.setHeaderColor('#070712');
-        if (tg.setBackgroundColor) tg.setBackgroundColor('#070712');
+        if (tg.disableVerticalSwipes) tg.disableVerticalSwipes();
+        if (tg.setHeaderColor) tg.setHeaderColor('#05050f');
+        if (tg.setBackgroundColor) tg.setBackgroundColor('#05050f');
       } catch (e) {}
 
       const user = tg.initDataUnsafe?.user;
       if (user) {
-        const username = user.username ? `@${user.username}` : (user.first_name || 'Cadet');
-        playerTgNameEl.innerText = username;
+        const display = user.username ? `@${user.username}` : (user.first_name || 'Cadet');
+        playerTgNameEl.textContent = display;
         localStorage.setItem('dmoon_tg_user', JSON.stringify(user));
       }
     }
 
-    // Enforce Telegram Gate if opened in plain external browser
-    const devBypass = sessionStorage.getItem('dmoon_dev_bypass') === 'true';
+    const urlPreview = new URLSearchParams(window.location.search).get('preview') === '1';
+    const devBypass = sessionStorage.getItem('dmoon_dev_bypass') === 'true' || urlPreview;
     if (!isInsideTelegram && !devBypass) {
       gateEl.style.display = 'flex';
     } else {
@@ -971,31 +1427,265 @@
     }
 
     // ==========================================
-    // SUPABASE CLOUD DATABASE & LEADERBOARD
+    // TOAST NOTIFICATIONS (REPLACES ALERT())
+    // ==========================================
+    let toastTimer = null;
+    function showToast(msg, variant = 'ok') {
+      const pill = document.getElementById('toast-pill');
+      pill.textContent = msg;
+      pill.className = 'toast-pill show' + (variant !== 'ok' ? ' ' + variant : '');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        pill.classList.remove('show');
+      }, 2400);
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    // ==========================================
+    // GAME STATE (BACKWARD-COMPATIBLE KEYS)
+    // ==========================================
+    let score = parseInt(localStorage.getItem('dmoon_score') || '0', 10) || 0;
+    let maxEnergy = parseInt(localStorage.getItem('dmoon_max_energy') || '1000', 10) || 1000;
+    let energy = parseInt(localStorage.getItem('dmoon_energy') || String(maxEnergy), 10);
+    if (isNaN(energy)) energy = maxEnergy;
+
+    let tapPower = parseInt(localStorage.getItem('dmoon_tappower') || '1', 10) || 1;
+    let autoRate = parseInt(localStorage.getItem('dmoon_autorate') || '0', 10) || 0;
+    let autoLvl = parseInt(localStorage.getItem('dmoon_autolvl') || '0', 10) || 0;
+    let regenRate = parseInt(localStorage.getItem('dmoon_regen_rate') || '3', 10) || 3;
+
+    let multitapCost = parseInt(localStorage.getItem('dmoon_multitap_cost') || '100', 10) || 100;
+    let autoMinerCost = parseInt(localStorage.getItem('dmoon_autominer_cost') || '500', 10) || 500;
+    let expandCost = parseInt(localStorage.getItem('dmoon_expand_cost') || '1000', 10) || 1000;
+    let regenCost = parseInt(localStorage.getItem('dmoon_regen_cost') || '750', 10) || 750;
+
+    let sfxEnabled = localStorage.getItem('dmoon_sfx') !== 'false';
+    let lastDaily = parseInt(localStorage.getItem('dmoon_last_daily') || '0', 10) || 0;
+    let streak = parseInt(localStorage.getItem('dmoon_streak') || '1', 10) || 1;
+
+    // Daily Boosters (3 Turbos + 3 Refills per calendar date)
+    function todayKey() {
+      const d = new Date();
+      return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+    }
+
+    let dailyBoosterDate = localStorage.getItem('dmoon_booster_date') || '';
+    let turbosLeft = parseInt(localStorage.getItem('dmoon_turbos_left') || '3', 10);
+    let refillsLeft = parseInt(localStorage.getItem('dmoon_refills_left') || '3', 10);
+    if (dailyBoosterDate !== todayKey()) {
+      dailyBoosterDate = todayKey();
+      turbosLeft = 3;
+      refillsLeft = 3;
+      localStorage.setItem('dmoon_booster_date', dailyBoosterDate);
+      localStorage.setItem('dmoon_turbos_left', '3');
+      localStorage.setItem('dmoon_refills_left', '3');
+    }
+
+    // Dynamic Combo / Fever / Turbo state
+    let comboCount = 0;
+    let lastTapTs = 0;
+    let feverActive = false;
+    let feverTimer = null;
+    let turboActive = false;
+    let turboTimer = null;
+    let pendingOfflineCoins = 0;
+
+    // ==========================================
+    // LEAGUE TIER ENGINE
+    // ==========================================
+    const LEAGUES = [
+      { min: 0, max: 2500, name: 'Lunar Cadet', ico: '🥉', nextIco: '🥈' },
+      { min: 2500, max: 10000, name: 'Orbit Pilot', ico: '🥈', nextIco: '🥇' },
+      { min: 10000, max: 35000, name: 'Moon Commander', ico: '🥇', nextIco: '💎' },
+      { min: 35000, max: 100000, name: 'Solana Legend', ico: '💎', nextIco: '👑' },
+      { min: 100000, max: 500000, name: 'Doge Whale', ico: '👑', nextIco: '🚀' }
+    ];
+
+    function getLeague(pts) {
+      for (let i = LEAGUES.length - 1; i >= 0; i--) {
+        if (pts >= LEAGUES[i].min) return LEAGUES[i];
+      }
+      return LEAGUES[0];
+    }
+
+    // ==========================================
+    // BATCHED RENDERING + DEBOUNCED PERSISTENCE
+    // ==========================================
+    let uiDirty = false;
+    let storageDirty = false;
+    let rafPending = false;
+    let lastRenderTab = 'tap';
+
+    function scheduleRender(saveToStorage = true) {
+      uiDirty = true;
+      if (saveToStorage) storageDirty = true;
+      if (!rafPending) {
+        rafPending = true;
+        requestAnimationFrame(flushRender);
+      }
+    }
+
+    const els = {
+      score: document.getElementById('score'),
+      hudTapVal: document.getElementById('hud-tap-val'),
+      passiveRate: document.getElementById('passive-rate'),
+      comboBadge: document.getElementById('combo-badge'),
+      energyText: document.getElementById('energy-text'),
+      energyFill: document.getElementById('energy-fill'),
+      coinBtn: document.getElementById('coin-btn'),
+      coinArea: document.getElementById('coin-area'),
+      ripple: document.getElementById('ripple-ring'),
+      sfxBtn: document.getElementById('sfx-btn'),
+      hudLeagueIco: document.getElementById('hud-league-ico'),
+      hudLeagueName: document.getElementById('hud-league-name'),
+      hudStreak: document.getElementById('hud-streak'),
+      leagueProgLeft: document.getElementById('league-prog-left'),
+      leagueProgRight: document.getElementById('league-prog-right'),
+      leagueBarFill: document.getElementById('league-bar-fill'),
+      quickTurboLeft: document.getElementById('quick-turbo-left'),
+      quickRefillLeft: document.getElementById('quick-refill-left'),
+      btnQuickTurbo: document.getElementById('btn-quick-turbo'),
+      btnQuickRefill: document.getElementById('btn-quick-refill'),
+      boostBalance: document.getElementById('boost-balance')
+    };
+
+    function flushRender() {
+      rafPending = false;
+      if (!uiDirty) return;
+      uiDirty = false;
+
+      const mult = turboActive ? 5 : (feverActive ? 2 : 1);
+      els.score.textContent = score.toLocaleString();
+      els.hudTapVal.textContent = (tapPower * mult).toLocaleString();
+      els.passiveRate.textContent = autoRate;
+      els.energyText.textContent = `${energy} / ${maxEnergy}`;
+      els.energyFill.style.width = `${Math.max(0, Math.min(100, (energy / maxEnergy) * 100))}%`;
+      els.sfxBtn.textContent = sfxEnabled ? '🔊' : '🔇';
+      els.hudStreak.textContent = `🔥 Day ${streak}`;
+
+      // Combo / Fever indicator
+      if (turboActive) {
+        els.comboBadge.textContent = '🚀 x5 TURBO';
+        els.comboBadge.className = 'kpi-chip fever';
+        els.coinBtn.classList.add('fever');
+      } else if (feverActive) {
+        els.comboBadge.textContent = '🔥 x2 FEVER';
+        els.comboBadge.className = 'kpi-chip fever';
+        els.coinBtn.classList.add('fever');
+      } else {
+        els.comboBadge.textContent = comboCount >= 3 ? `⚡ x1.0 (${comboCount}/10)` : '⚡ x1.0';
+        els.comboBadge.className = 'kpi-chip';
+        els.coinBtn.classList.remove('fever');
+      }
+
+      // League bar
+      const lg = getLeague(score);
+      els.hudLeagueIco.textContent = lg.ico;
+      els.hudLeagueName.textContent = lg.name;
+      els.leagueProgLeft.textContent = `${lg.ico} ${lg.name}`;
+      const span = Math.max(1, lg.max - lg.min);
+      const pct = Math.min(100, Math.max(0, ((score - lg.min) / span) * 100));
+      els.leagueProgRight.textContent = score >= lg.max ? 'MAX TIER 👑' : `${score.toLocaleString()} / ${lg.max.toLocaleString()} → ${lg.nextIco}`;
+      els.leagueBarFill.style.width = `${pct}%`;
+
+      // Daily quick buttons
+      els.quickTurboLeft.textContent = `(${turbosLeft}/3)`;
+      els.quickRefillLeft.textContent = `(${refillsLeft}/3)`;
+      els.btnQuickTurbo.disabled = turbosLeft <= 0 || turboActive;
+      els.btnQuickRefill.disabled = refillsLeft <= 0 || energy >= maxEnergy;
+
+      // Boost view values (only update if visible or on upgrade)
+      if (lastRenderTab === 'boosts') {
+        updateBoostsUI();
+      }
+    }
+
+    function updateBoostsUI() {
+      els.boostBalance.textContent = `${score.toLocaleString()} $DMOON`;
+      document.getElementById('multitap-lvl').textContent = tapPower;
+      document.getElementById('autobot-lvl').textContent = autoLvl;
+      document.getElementById('expand-lvl').textContent = Math.max(1, Math.round((maxEnergy - 500) / 500));
+      document.getElementById('regen-lvl').textContent = Math.max(1, regenRate - 2);
+      document.getElementById('regen-rate-lbl').textContent = regenRate;
+
+      const btnMulti = document.getElementById('btn-multitap');
+      const btnAuto = document.getElementById('btn-autobot');
+      const btnExpand = document.getElementById('btn-expand');
+      const btnRegen = document.getElementById('btn-regen');
+
+      btnMulti.textContent = `Buy ${multitapCost.toLocaleString()}`;
+      btnAuto.textContent = `Buy ${autoMinerCost.toLocaleString()}`;
+      btnExpand.textContent = `Buy ${expandCost.toLocaleString()}`;
+      btnRegen.textContent = `Buy ${regenCost.toLocaleString()}`;
+
+      btnMulti.disabled = score < multitapCost;
+      btnAuto.disabled = score < autoMinerCost;
+      btnExpand.disabled = score < expandCost;
+      btnRegen.disabled = score < regenCost;
+
+      document.getElementById('card-turbo-left').textContent = `${turbosLeft} / 3 left today`;
+      document.getElementById('card-refill-left').textContent = `${refillsLeft} / 3 left today`;
+      document.getElementById('card-daily-turbo').disabled = turbosLeft <= 0 || turboActive;
+      document.getElementById('card-daily-refill').disabled = refillsLeft <= 0 || energy >= maxEnergy;
+    }
+
+    function persistLocalState() {
+      if (!storageDirty) return;
+      storageDirty = false;
+      localStorage.setItem('dmoon_score', String(score));
+      localStorage.setItem('dmoon_energy', String(energy));
+      localStorage.setItem('dmoon_max_energy', String(maxEnergy));
+      localStorage.setItem('dmoon_tappower', String(tapPower));
+      localStorage.setItem('dmoon_autorate', String(autoRate));
+      localStorage.setItem('dmoon_autolvl', String(autoLvl));
+      localStorage.setItem('dmoon_regen_rate', String(regenRate));
+      localStorage.setItem('dmoon_multitap_cost', String(multitapCost));
+      localStorage.setItem('dmoon_autominer_cost', String(autoMinerCost));
+      localStorage.setItem('dmoon_expand_cost', String(expandCost));
+      localStorage.setItem('dmoon_regen_cost', String(regenCost));
+      localStorage.setItem('dmoon_turbos_left', String(turbosLeft));
+      localStorage.setItem('dmoon_refills_left', String(refillsLeft));
+      localStorage.setItem('dmoon_last_seen_ts', String(Date.now()));
+    }
+
+    // Flush localStorage gently every 2 seconds and immediately on background/close
+    setInterval(() => {
+      persistLocalState();
+      syncScoreToCloud(false);
+    }, 2000);
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') {
+        storageDirty = true;
+        persistLocalState();
+        syncScoreToCloud(true);
+      }
+    });
+    window.addEventListener('pagehide', () => {
+      storageDirty = true;
+      persistLocalState();
+    });
+
+    // ==========================================
+    // SUPABASE CLOUD SYNC + ANTI-RESET HYDRATION
     // ==========================================
     const SUPABASE_URL = 'https://xvtdrtpywxpwzipwyenk.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh2dGRydHB5d3hwd3ppcHd5ZW5rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU1Mjc2NDksImV4cCI6MjExMTEwMzY0OX0.wARPuSR5km9jrwvhajcoH1cd_7NYSI3TUJ4q9DAnmcE';
 
-    let lastSyncTime = 0;
-    let syncTimeout = null;
+    let allowCloudSync = false;
+    let lastCloudSyncTime = 0;
+    let pendingCloudDirty = false;
+    let highestKnownCloudScore = 0;
 
-    async function syncScoreToCloud(immediate = false) {
-      const now = Date.now();
-      if (!immediate && now - lastSyncTime < 6000) {
-        if (!syncTimeout) {
-          syncTimeout = setTimeout(() => {
-            syncTimeout = null;
-            syncScoreToCloud(true);
-          }, 6000);
-        }
-        return;
-      }
-      lastSyncTime = now;
-      if (syncTimeout) {
-        clearTimeout(syncTimeout);
-        syncTimeout = null;
-      }
-
+    function getUserIdentity() {
       const tgUser = JSON.parse(localStorage.getItem('dmoon_tg_user') || 'null');
       let uid = tgUser ? String(tgUser.id) : (localStorage.getItem('dmoon_user_id') || '');
       if (!uid) {
@@ -1004,10 +1694,77 @@
       }
       const uname = tgUser ? (tgUser.username || tgUser.first_name || 'Cadet') : ('Cadet_' + uid.slice(-4));
       const fname = tgUser ? (tgUser.first_name || 'Cadet') : 'Cadet';
-      const wallet = localStorage.getItem('dmoon_wallet') || null;
+      return { uid, uname, fname };
+    }
+
+    async function hydrateFromCloud() {
+      const { uid, uname } = getUserIdentity();
+      const chip = document.getElementById('sync-status-chip');
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 4500);
 
       try {
-        await fetch(SUPABASE_URL + '/rest/v1/players', {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/players?telegram_id=eq.${encodeURIComponent(uid)}&select=score,solana_wallet`, {
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY },
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        const rows = await res.json();
+        if (Array.isArray(rows) && rows.length > 0) {
+          const cloudRow = rows[0];
+          const cloudScore = Number(cloudRow.score || 0);
+          highestKnownCloudScore = cloudScore;
+          if (score > cloudScore) pendingCloudDirty = true;
+          if (cloudScore > score) {
+            score = cloudScore;
+            scheduleRender(true);
+            showToast(`☁️ Restored ${score.toLocaleString()} $DMOON from Cloud!`);
+          }
+          if (cloudRow.solana_wallet && !localStorage.getItem('dmoon_wallet')) {
+            localStorage.setItem('dmoon_wallet', cloudRow.solana_wallet);
+            renderSavedWallet();
+          }
+        }
+        if (chip) chip.textContent = '☁️ Synced';
+      } catch (e) {
+        if (chip) chip.textContent = '☁️ Offline';
+      } finally {
+        allowCloudSync = true;
+        calculateOfflineVault();
+        refreshHeaderRankOnly(uid, uname);
+      }
+    }
+
+    async function refreshHeaderRankOnly(uid, uname) {
+      try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/players?select=telegram_id,username,score&order=score.desc&limit=100`, {
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+        });
+        const list = await res.json();
+        if (!Array.isArray(list)) return;
+        const idx = list.findIndex(p => p.telegram_id === uid || (uname && p.username === uname));
+        if (idx >= 0) {
+          document.getElementById('hud-global-rank').textContent = `#${idx + 1}`;
+        }
+      } catch (e) {}
+    }
+
+    async function syncScoreToCloud(immediate = false) {
+      if (!allowCloudSync || urlPreview) return;
+      const tgUserCheck = JSON.parse(localStorage.getItem('dmoon_tg_user') || 'null');
+      if (!tgUserCheck || !tgUserCheck.id) return;
+      const now = Date.now();
+      if (!immediate && (!pendingCloudDirty || now - lastCloudSyncTime < 5000)) return;
+      if (!immediate && now - lastCloudSyncTime < 5000) return;
+
+      lastCloudSyncTime = now;
+      pendingCloudDirty = false;
+      const { uid, uname, fname } = getUserIdentity();
+      const wallet = localStorage.getItem('dmoon_wallet') || null;
+      const safeScore = Math.max(score, highestKnownCloudScore);
+
+      try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/players`, {
           method: 'POST',
           headers: {
             'apikey': SUPABASE_KEY,
@@ -1019,151 +1776,70 @@
             telegram_id: uid,
             username: uname,
             first_name: fname,
-            score: score,
+            score: safeScore,
             solana_wallet: wallet,
             last_active: new Date().toISOString()
           })
         });
-      } catch (e) {
-        console.warn('Supabase sync skipped:', e.message);
+        if (res.ok) {
+          highestKnownCloudScore = safeScore;
+          const chip = document.getElementById('sync-status-chip');
+          if (chip) chip.textContent = '☁️ Synced';
+        }
+      } catch (e) {}
+    }
+
+    // ==========================================
+    // OFFLINE AUTO-MINER VAULT (UP TO 3 HOURS)
+    // ==========================================
+    function calculateOfflineVault() {
+      const lastSeen = parseInt(localStorage.getItem('dmoon_last_seen_ts') || '0', 10);
+      localStorage.setItem('dmoon_last_seen_ts', String(Date.now()));
+      if (!lastSeen || autoRate <= 0) return;
+
+      const elapsedSec = Math.floor((Date.now() - lastSeen) / 1000);
+      if (elapsedSec >= 30) {
+        const cappedSec = Math.min(elapsedSec, 10800); // max 3 hours
+        pendingOfflineCoins = cappedSec * autoRate;
+        if (pendingOfflineCoins > 0) {
+          document.getElementById('offline-amt').textContent = pendingOfflineCoins.toLocaleString();
+          document.getElementById('offline-banner').style.display = 'flex';
+        }
       }
     }
 
-    async function loadLeaderboard() {
-      const listEl = document.getElementById('leaderboard-list');
-      const totalScoreEl = document.getElementById('lb-total-mined');
-      const totalMinersEl = document.getElementById('lb-total-miners');
-      const myRankEl = document.getElementById('lb-my-rank');
-      const myShareEl = document.getElementById('lb-my-share');
-
-      if (!listEl) return;
-      listEl.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-dim);">Loading top miners...</div>';
-
-      try {
-        const res = await fetch(SUPABASE_URL + '/rest/v1/players?select=*&order=score.desc&limit=50', {
-          headers: {
-            'apikey': SUPABASE_KEY,
-            'Authorization': 'Bearer ' + SUPABASE_KEY
-          }
-        });
-        const players = await res.json();
-        if (!Array.isArray(players) || players.length === 0) {
-          listEl.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-dim);">No miners found yet. Start tapping to claim #1!</div>';
-          return;
-        }
-
-        let totalCommunityScore = 0;
-        players.forEach(p => totalCommunityScore += Number(p.score || 0));
-        if (totalScoreEl) totalScoreEl.innerText = totalCommunityScore.toLocaleString() + ' $DMOON';
-        if (totalMinersEl) totalMinersEl.innerText = players.length;
-
-        const tgUser = JSON.parse(localStorage.getItem('dmoon_tg_user') || 'null');
-        const myId = tgUser ? String(tgUser.id) : localStorage.getItem('dmoon_user_id');
-
-        let myRank = -1;
-        let html = '';
-
-        players.forEach((p, idx) => {
-          const rank = idx + 1;
-          const isMe = (p.telegram_id === myId) || (tgUser && p.username === tgUser.username);
-          if (isMe) myRank = rank;
-
-          let medal = '#' + rank;
-          let medalColor = 'var(--text-dim)';
-          if (rank === 1) { medal = '🥇 #1'; medalColor = '#FFD700'; }
-          else if (rank === 2) { medal = '🥈 #2'; medalColor = '#E0E0E0'; }
-          else if (rank === 3) { medal = '🥉 #3'; medalColor = '#CD7F32'; }
-
-          const displayName = p.username ? ('@' + p.username) : (p.first_name || 'Cadet');
-
-          html += `
-            <div class="card-item ${isMe ? 'my-rank-highlight' : ''}" style="margin-bottom:8px; padding:10px 12px; display:flex; align-items:center;">
-              <div style="font-weight:900; font-size:15px; min-width:44px; color:${medalColor};">${medal}</div>
-              <div class="card-info" style="flex:1; margin-left:6px;">
-                <div style="font-weight:700; font-size:14px; color:${isMe ? 'var(--secondary)' : 'var(--text)'};">
-                  ${displayName} ${isMe ? '<span style="font-size:10px; background:rgba(20,241,149,0.2); padding:2px 6px; border-radius:6px; color:var(--secondary); font-weight:800;">YOU</span>' : ''}
-                </div>
-                <div style="font-size:11px; color:${p.solana_wallet ? 'var(--secondary)' : 'var(--text-dim)'};">
-                  ${p.solana_wallet ? '✓ Wallet linked' : 'No wallet yet'}
-                </div>
-              </div>
-              <div style="text-align:right;">
-                <div style="font-weight:800; color:var(--accent); font-size:15px;">${Number(p.score).toLocaleString()}</div>
-                <div style="font-size:10px; color:var(--text-dim);">$DMOON</div>
-              </div>
-            </div>
-          `;
-        });
-
-        listEl.innerHTML = html;
-
-        if (myRankEl) {
-          myRankEl.innerText = myRank > 0 ? ('#' + myRank) : (score > 0 ? 'Top 100' : 'Unranked');
-        }
-        if (myShareEl && totalCommunityScore > 0) {
-          const share = Math.floor((score / Math.max(score, totalCommunityScore)) * 30000000);
-          myShareEl.innerText = '~' + share.toLocaleString() + ' $DMOON';
-        }
-      } catch (err) {
-        listEl.innerHTML = '<div style="text-align:center; padding:20px; color:var(--danger);">Could not load leaderboard: ' + err.message + '</div>';
-      }
+    function claimOfflineVault() {
+      if (pendingOfflineCoins <= 0) return;
+      const amt = pendingOfflineCoins;
+      pendingOfflineCoins = 0;
+      score += amt;
+      document.getElementById('offline-banner').style.display = 'none';
+      pendingCloudDirty = true;
+      scheduleRender(true);
+      persistLocalState();
+      syncScoreToCloud(true);
+      showToast(`🛸 Claimed +${amt.toLocaleString()} $DMOON offline earnings!`);
+      if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
     }
 
-    
     // ==========================================
-    // PERSISTENT GAME STATE
+    // GPU PARTICLE POOL + MULTI-TOUCH 3D TAPPER
     // ==========================================
-    let score = parseInt(localStorage.getItem('dmoon_score') || '0');
-    let energy = parseInt(localStorage.getItem('dmoon_energy') || '1000');
-    let maxEnergy = parseInt(localStorage.getItem('dmoon_max_energy') || '1000');
-    let tapPower = parseInt(localStorage.getItem('dmoon_tappower') || '1');
-    let autoRate = parseInt(localStorage.getItem('dmoon_autorate') || '0');
-    let autoLvl = parseInt(localStorage.getItem('dmoon_autolvl') || '0');
-    let multitapCost = parseInt(localStorage.getItem('dmoon_multitap_cost') || '100');
-    let autoMinerCost = parseInt(localStorage.getItem('dmoon_autominer_cost') || '500');
-    let expandCost = parseInt(localStorage.getItem('dmoon_expand_cost') || '1000');
-    let sfxEnabled = localStorage.getItem('dmoon_sfx') !== 'false';
-    let lastDaily = parseInt(localStorage.getItem('dmoon_last_daily') || '0');
-    let streak = parseInt(localStorage.getItem('dmoon_streak') || '1');
-
-    // UI Elements
-    const scoreEl = document.getElementById('score');
-    const energyFillEl = document.getElementById('energy-fill');
-    const energyTextEl = document.getElementById('energy-text');
-    const coinBtn = document.getElementById('coin-btn');
-    const coinArea = document.getElementById('coin-area');
-    const passiveRateEl = document.getElementById('passive-rate');
-    const sfxBtn = document.getElementById('sfx-btn');
-
-    function updateUI() {
-      scoreEl.innerText = score.toLocaleString();
-      energyTextEl.innerText = `${energy} / ${maxEnergy}`;
-      energyFillEl.style.width = `${(energy / maxEnergy) * 100}%`;
-      passiveRateEl.innerText = autoRate;
-      document.getElementById('multitap-lvl').innerText = tapPower;
-      document.getElementById('autobot-lvl').innerText = autoLvl;
-      document.getElementById('btn-multitap').innerText = `Buy ${multitapCost.toLocaleString()}`;
-      document.getElementById('btn-autobot').innerText = `Buy ${autoMinerCost.toLocaleString()}`;
-      document.getElementById('btn-expand').innerText = `Buy ${expandCost.toLocaleString()}`;
-      sfxBtn.innerText = sfxEnabled ? '🔊' : '🔇';
-
-      localStorage.setItem('dmoon_score', score);
-      localStorage.setItem('dmoon_energy', energy);
-      localStorage.setItem('dmoon_max_energy', maxEnergy);
-      localStorage.setItem('dmoon_tappower', tapPower);
-      localStorage.setItem('dmoon_autorate', autoRate);
-      localStorage.setItem('dmoon_autolvl', autoLvl);
-      localStorage.setItem('dmoon_multitap_cost', multitapCost);
-      localStorage.setItem('dmoon_autominer_cost', autoMinerCost);
-      localStorage.setItem('dmoon_expand_cost', expandCost);
-      syncScoreToCloud();
+    const floatPoolEl = document.getElementById('float-pool');
+    const floatPool = [];
+    for (let i = 0; i < 20; i++) {
+      const sp = document.createElement('span');
+      sp.className = 'float-pool-item';
+      floatPoolEl.appendChild(sp);
+      floatPool.push(sp);
     }
+    let poolIndex = 0;
+    let tiltResetTimer = null;
 
-    // Web Audio Synthesizer
+    // Web Audio Tap Synth
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     let audioCtx = null;
-
-    function playTapSound() {
+    function playTapSound(high = false) {
       if (!sfxEnabled) return;
       try {
         if (!audioCtx) audioCtx = new AudioCtx();
@@ -1171,227 +1847,484 @@
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(440, audioCtx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.07);
-        gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.07);
+        osc.frequency.setValueAtTime(high ? 580 : 440, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(high ? 1020 : 840, audioCtx.currentTime + 0.065);
+        gain.gain.setValueAtTime(0.11, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.008, audioCtx.currentTime + 0.065);
         osc.connect(gain);
         gain.connect(audioCtx.destination);
         osc.start();
-        osc.stop(audioCtx.currentTime + 0.07);
+        osc.stop(audioCtx.currentTime + 0.065);
       } catch (e) {}
     }
 
     function toggleSFX() {
       sfxEnabled = !sfxEnabled;
-      localStorage.setItem('dmoon_sfx', sfxEnabled);
-      updateUI();
+      localStorage.setItem('dmoon_sfx', String(sfxEnabled));
+      scheduleRender(false);
+      showToast(sfxEnabled ? '🔊 Sound FX enabled' : '🔇 Sound FX muted');
     }
 
-    // Tap Handling (Touch + Pointer + Telegram Haptics)
-    coinBtn.addEventListener('pointerdown', (e) => {
-      if (energy < tapPower) return;
-      energy = Math.max(0, energy - tapPower);
-      score += tapPower;
-
-      // Telegram Native Haptic Feedback
-      if (tg && tg.HapticFeedback) {
-        tg.HapticFeedback.impactOccurred('light');
-      } else if (navigator.vibrate) {
-        navigator.vibrate(10);
+    els.coinBtn.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      if (!turboActive && energy < tapPower) {
+        showToast('⚡ Energy depleted! Tap Full Energy or let it recharge', 'warn');
+        if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('warning');
+        return;
       }
 
-      playTapSound();
+      if (!turboActive) energy = Math.max(0, energy - tapPower);
 
-      // Particle floating number
-      const rect = coinArea.getBoundingClientRect();
-      const floatEl = document.createElement('div');
-      floatEl.className = 'floating-text';
-      floatEl.innerText = `+${tapPower}`;
-      floatEl.style.left = `${e.clientX - rect.left}px`;
-      floatEl.style.top = `${e.clientY - rect.top}px`;
-      coinArea.appendChild(floatEl);
+      // Combo & 2x Fever tracking
+      const now = Date.now();
+      if (now - lastTapTs < 650) {
+        comboCount++;
+        if (comboCount >= 10 && !feverActive && !turboActive) {
+          feverActive = true;
+          showToast('🔥 2x FEVER MODE! Double points for 7s!');
+          if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+          clearTimeout(feverTimer);
+          feverTimer = setTimeout(() => {
+            feverActive = false;
+            comboCount = 0;
+            scheduleRender(false);
+          }, 7000);
+        }
+      } else {
+        comboCount = 1;
+      }
+      lastTapTs = now;
 
-      setTimeout(() => floatEl.remove(), 750);
-      updateUI();
+      const mult = turboActive ? 5 : (feverActive ? 2 : 1);
+      const gain = tapPower * mult;
+      score += gain;
+      pendingCloudDirty = true;
+
+      // Telegram Haptics + Audio
+      if (tg?.HapticFeedback) {
+        tg.HapticFeedback.impactOccurred(mult > 1 ? 'medium' : 'light');
+      } else if (navigator.vibrate) {
+        navigator.vibrate(8);
+      }
+      playTapSound(mult > 1);
+
+      // 3D Coin Tilt
+      const btnRect = els.coinBtn.getBoundingClientRect();
+      const dx = ((e.clientX - btnRect.left) / btnRect.width - 0.5) * 2;
+      const dy = ((e.clientY - btnRect.top) / btnRect.height - 0.5) * 2;
+      els.coinBtn.style.transform = `rotateY(${dx * 16}deg) rotateX(${-dy * 16}deg) scale(0.93)`;
+      clearTimeout(tiltResetTimer);
+      tiltResetTimer = setTimeout(() => {
+        els.coinBtn.style.transform = 'rotateY(0deg) rotateX(0deg) scale(1)';
+      }, 95);
+
+      // Shockwave ring
+      els.ripple.classList.remove('pop');
+      void els.ripple.offsetWidth;
+      els.ripple.classList.add('pop');
+
+      // Pooled Floating +N Particle
+      const areaRect = els.coinArea.getBoundingClientRect();
+      const item = floatPool[poolIndex % floatPool.length];
+      poolIndex++;
+      item.textContent = `+${gain}`;
+      item.style.left = `${e.clientX - areaRect.left}px`;
+      item.style.top = `${e.clientY - areaRect.top - 10}px`;
+      item.style.color = mult > 1 ? '#14F195' : '#FFD700';
+      item.classList.remove('active');
+      void item.offsetWidth;
+      item.classList.add('active');
+
+      scheduleRender(true);
     });
 
-    // Passive Energy Regen (+3 per sec)
+    // Passive Energy Regen + Online Auto-Miner (1 tick/sec)
     setInterval(() => {
+      let changed = false;
       if (energy < maxEnergy) {
-        energy = Math.min(maxEnergy, energy + 3);
-        updateUI();
+        energy = Math.min(maxEnergy, energy + regenRate);
+        changed = true;
       }
-    }, 1000);
-
-    // Passive Auto Miner
-    setInterval(() => {
       if (autoRate > 0) {
         score += autoRate;
-        updateUI();
+        pendingCloudDirty = true;
+        changed = true;
       }
+      if (comboCount > 0 && !feverActive && Date.now() - lastTapTs > 1200) {
+        comboCount = 0;
+        changed = true;
+      }
+      if (changed) scheduleRender(true);
     }, 1000);
 
-    // Navigation & Modals
-    function switchNav(tab) {
-      document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-      const activeBtn = document.getElementById(`tab-${tab}`);
-      if (activeBtn) activeBtn.classList.add('active');
+    // ==========================================
+    // DAILY BOOSTERS & PERMANENT UPGRADES
+    // ==========================================
+    function activateDailyTurbo() {
+      if (turboActive) { showToast('🚀 Turbo already active!', 'warn'); return; }
+      if (turbosLeft <= 0) { showToast('No free Turbos left today! Resets tomorrow', 'warn'); return; }
+
+      turbosLeft--;
+      turboActive = true;
+      switchTab('tap');
+      scheduleRender(true);
+      persistLocalState();
+      showToast('🚀 5x ROCKET TURBO (15s) — ZERO ENERGY DRAIN!');
+      if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+
+      clearTimeout(turboTimer);
+      turboTimer = setTimeout(() => {
+        turboActive = false;
+        scheduleRender(false);
+        showToast('🚀 Rocket Turbo finished!');
+      }, 15000);
     }
 
-    function openModal(id) {
-      document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
-      document.getElementById(id).style.display = 'flex';
-      if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-      if (id === 'leaderboard-modal') loadLeaderboard();
+    function useDailyRefill() {
+      if (refillsLeft <= 0) { showToast('No free refills left today!', 'warn'); return; }
+      if (energy >= maxEnergy) { showToast('🔋 Energy is already 100% full!', 'warn'); return; }
+
+      refillsLeft--;
+      energy = maxEnergy;
+      switchTab('tap');
+      scheduleRender(true);
+      persistLocalState();
+      showToast('🔋 Energy refilled to 100%!');
+      if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
     }
 
-    function closeModal(id) {
-      document.getElementById(id).style.display = 'none';
-      switchNav('tap');
-    }
-
-    // Boost Purchase Functions
     function buyMultitap() {
-      if (score >= multitapCost) {
-        score -= multitapCost;
-        tapPower += 1;
-        multitapCost = Math.floor(multitapCost * 2.2);
-        updateUI();
-        if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-      } else {
-        alert('Not enough $DMOON to upgrade Multitap!');
-      }
+      if (score < multitapCost) { showToast(`Need ${multitapCost.toLocaleString()} $DMOON!`, 'err'); return; }
+      score -= multitapCost;
+      tapPower += 1;
+      multitapCost = Math.floor(multitapCost * 2.15);
+      pendingCloudDirty = true;
+      scheduleRender(true);
+      updateBoostsUI();
+      showToast(`⚡ Multitap upgraded to Level ${tapPower}!`);
+      if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
     }
 
     function buyAutoMiner() {
-      if (score >= autoMinerCost) {
-        score -= autoMinerCost;
-        autoRate += 5;
-        autoLvl += 1;
-        autoMinerCost = Math.floor(autoMinerCost * 2.4);
-        updateUI();
-        if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-      } else {
-        alert('Not enough $DMOON to hire an Auto-Miner!');
-      }
-    }
-
-    function refillEnergy() {
-      if (score >= 250) {
-        score -= 250;
-        energy = maxEnergy;
-        updateUI();
-        closeModal('boost-modal');
-        if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-      } else {
-        alert('Not enough $DMOON for Energy Refill!');
-      }
+      if (score < autoMinerCost) { showToast(`Need ${autoMinerCost.toLocaleString()} $DMOON!`, 'err'); return; }
+      score -= autoMinerCost;
+      autoRate += 5;
+      autoLvl += 1;
+      autoMinerCost = Math.floor(autoMinerCost * 2.35);
+      pendingCloudDirty = true;
+      scheduleRender(true);
+      updateBoostsUI();
+      showToast(`🤖 Auto-Doge Miner Level ${autoLvl} (+${autoRate}/sec)!`);
+      if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
     }
 
     function buyEnergyExpansion() {
-      if (score >= expandCost) {
-        score -= expandCost;
-        maxEnergy += 500;
-        energy = maxEnergy;
-        expandCost = Math.floor(expandCost * 2.5);
-        updateUI();
-        if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-      } else {
-        alert('Not enough $DMOON for Energy Expansion!');
-      }
+      if (score < expandCost) { showToast(`Need ${expandCost.toLocaleString()} $DMOON!`, 'err'); return; }
+      score -= expandCost;
+      maxEnergy += 500;
+      energy = maxEnergy;
+      expandCost = Math.floor(expandCost * 2.4);
+      pendingCloudDirty = true;
+      scheduleRender(true);
+      updateBoostsUI();
+      showToast(`🔋 Max Energy tank expanded to ${maxEnergy.toLocaleString()}!`);
+      if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
     }
 
-    // Community Tasks Execution
-    function doTask(taskId, url, reward) {
-      const done = localStorage.getItem(`dmoon_task_${taskId}`);
-      if (done) return;
+    function buyRegenUpgrade() {
+      if (score < regenCost) { showToast(`Need ${regenCost.toLocaleString()} $DMOON!`, 'err'); return; }
+      score -= regenCost;
+      regenRate += 1;
+      regenCost = Math.floor(regenCost * 2.5);
+      pendingCloudDirty = true;
+      scheduleRender(true);
+      updateBoostsUI();
+      showToast(`⚡ Recharge speed boosted to +${regenRate}/sec!`);
+      if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+    }
 
-      if (tg && tg.openLink) {
+    // ==========================================
+    // COMMUNITY QUESTS (WITH VERIFY STATE)
+    // ==========================================
+    const QUEST_IDS = ['tgchannel', 'tggroup', 'instagram', 'twitter', 'burn', 'dex'];
+
+    function refreshQuestStates() {
+      let completedCount = 0;
+      QUEST_IDS.forEach(taskId => {
+        if (localStorage.getItem(`dmoon_task_${taskId}`)) {
+          completedCount++;
+          const btn = document.getElementById(`task-btn-${taskId}`);
+          const card = document.getElementById(`task-card-${taskId}`);
+          if (btn) {
+            btn.textContent = '✓ Claimed';
+            btn.disabled = true;
+            btn.className = 'card-btn done';
+          }
+          if (card) card.classList.add('done-card');
+        }
+      });
+      document.getElementById('quest-progress-lbl').textContent = `${completedCount} / ${QUEST_IDS.length} Done`;
+    }
+
+    function doTask(taskId, url, reward) {
+      if (localStorage.getItem(`dmoon_task_${taskId}`)) return;
+      const btn = document.getElementById(`task-btn-${taskId}`);
+      if (btn) {
+        btn.textContent = 'Checking...';
+        btn.disabled = true;
+      }
+
+      if (tg?.openLink) {
         tg.openLink(url);
       } else {
         window.open(url, '_blank');
       }
 
-      score += reward;
-      localStorage.setItem(`dmoon_task_${taskId}`, 'true');
-      const btn = document.getElementById(`task-btn-${taskId}`);
-      if (btn) {
-        btn.innerText = 'Completed ✓';
-        btn.disabled = true;
-        btn.style.background = 'rgba(255,255,255,0.1)';
-        btn.style.color = '#14F195';
-      }
-      if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-      updateUI();
+      setTimeout(() => {
+        localStorage.setItem(`dmoon_task_${taskId}`, 'true');
+        score += reward;
+        pendingCloudDirty = true;
+        refreshQuestStates();
+        scheduleRender(true);
+        persistLocalState();
+        syncScoreToCloud(true);
+        showToast(`✅ Quest Verified! +${reward.toLocaleString()} $DMOON`);
+        if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+      }, 1500);
     }
 
-    // Initialize task button states
-    ['tgchannel', 'tggroup', 'twitter', 'burn', 'dex'].forEach(taskId => {
-      if (localStorage.getItem(`dmoon_task_${taskId}`)) {
-        const btn = document.getElementById(`task-btn-${taskId}`);
-        if (btn) {
-          btn.innerText = 'Completed ✓';
-          btn.disabled = true;
-          btn.style.background = 'rgba(255,255,255,0.1)';
-          btn.style.color = '#14F195';
-        }
-      }
-    });
+    // ==========================================
+    // 7-DAY DAILY STREAK GRID
+    // ==========================================
+    const STREAK_REWARDS = [1000, 2000, 3000, 5000, 8000, 12000, 25000];
 
-    // Daily Miner Bonus
-    function claimDailyBonus() {
+    function renderStreakGrid() {
+      const grid = document.getElementById('streak-grid');
+      const timerLbl = document.getElementById('daily-timer-lbl');
+      const dot = document.getElementById('daily-dot');
       const now = Date.now();
       const oneDay = 24 * 60 * 60 * 1000;
-      if (now - lastDaily < oneDay) {
-        const hoursLeft = Math.ceil((oneDay - (now - lastDaily)) / (60 * 60 * 1000));
-        document.getElementById('daily-status').innerText = `Next reward available in ${hoursLeft} hours!`;
-        return;
+
+      // Reset streak if missed > 48 hours
+      if (lastDaily > 0 && now - lastDaily > 48 * 60 * 60 * 1000) {
+        streak = 1;
+        localStorage.setItem('dmoon_streak', '1');
       }
-      const reward = 1000 * streak;
+
+      const activeDayIdx = ((streak - 1) % 7); // 0..6
+      const canClaim = (now - lastDaily >= oneDay);
+
+      if (canClaim) {
+        timerLbl.textContent = 'Reward Ready 🎁';
+        if (dot) dot.style.display = 'block';
+      } else {
+        const hrs = Math.max(1, Math.ceil((oneDay - (now - lastDaily)) / (60 * 60 * 1000)));
+        timerLbl.textContent = `Next in ${hrs}h`;
+        if (dot) dot.style.display = 'none';
+      }
+
+      let html = '';
+      STREAK_REWARDS.forEach((amt, idx) => {
+        const dayNum = idx + 1;
+        const isBig = dayNum === 7;
+        let cls = 'streak-cell' + (isBig ? ' span-2' : '');
+        let label = `+${(amt / 1000)}K`;
+        let clickAttr = '';
+
+        if (idx < activeDayIdx) {
+          cls += ' claimed';
+          label = `+${(amt / 1000)}K ✓`;
+        } else if (idx === activeDayIdx && canClaim) {
+          cls += ' ready';
+          label = `+${(amt / 1000)}K 🎁`;
+          clickAttr = 'onclick="claimDailyStreak()"';
+        }
+
+        html += `
+          <div class="${cls}" ${clickAttr}>
+            <div class="streak-day">${isBig ? 'Day 7 Mega' : 'Day ' + dayNum}</div>
+            <div class="streak-amt">${label}</div>
+          </div>
+        `;
+      });
+      grid.innerHTML = html;
+    }
+
+    function claimDailyStreak() {
+      const now = Date.now();
+      const oneDay = 24 * 60 * 60 * 1000;
+      if (now - lastDaily < oneDay) return;
+
+      const idx = (streak - 1) % 7;
+      const reward = STREAK_REWARDS[idx];
       score += reward;
       lastDaily = now;
       streak += 1;
-      localStorage.setItem('dmoon_last_daily', lastDaily);
-      localStorage.setItem('dmoon_streak', streak);
-      document.getElementById('streak-days').innerText = `Day ${streak}`;
-      document.getElementById('daily-status').innerText = `Claimed +${reward.toLocaleString()} $DMOON!`;
-      if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-      updateUI();
+      localStorage.setItem('dmoon_last_daily', String(lastDaily));
+      localStorage.setItem('dmoon_streak', String(streak));
+
+      pendingCloudDirty = true;
+      renderStreakGrid();
+      scheduleRender(true);
+      persistLocalState();
+      syncScoreToCloud(true);
+      showToast(`🎁 Day ${idx + 1} Bonus Claimed: +${reward.toLocaleString()} $DMOON!`);
+      if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
     }
 
-    // Wallet Registration
-    function saveWallet() {
-      const addr = document.getElementById('wallet-input').value.trim();
-      if (addr.length >= 32 && addr.length <= 44) {
-        localStorage.setItem('dmoon_wallet', addr);
-        document.getElementById('wallet-status').innerText = `✓ Wallet registered: ${addr.slice(0, 4)}...${addr.slice(-4)}`;
-        if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-      } else {
-        alert('Please enter a valid Solana wallet address (32-44 characters)!');
+    // ==========================================
+    // WALLET, COPY CA & SHARE
+    // ==========================================
+    function renderSavedWallet() {
+      const savedWallet = localStorage.getItem('dmoon_wallet');
+      if (savedWallet) {
+        document.getElementById('wallet-input').value = savedWallet;
+        document.getElementById('wallet-status').textContent = `✓ Wallet linked: ${savedWallet.slice(0, 4)}...${savedWallet.slice(-4)}`;
       }
     }
 
-    const savedWallet = localStorage.getItem('dmoon_wallet');
-    if (savedWallet) {
-      document.getElementById('wallet-input').value = savedWallet;
-      document.getElementById('wallet-status').innerText = `✓ Wallet registered: ${savedWallet.slice(0, 4)}...${savedWallet.slice(-4)}`;
+    function saveWallet() {
+      const addr = document.getElementById('wallet-input').value.trim();
+      if (/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(addr)) {
+        localStorage.setItem('dmoon_wallet', addr);
+        renderSavedWallet();
+        pendingCloudDirty = true;
+        syncScoreToCloud(true);
+        showToast('✓ Solana Wallet linked & synced to Cloud!');
+        if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+      } else {
+        showToast('Enter a valid Solana address (32-44 Base58 chars)', 'err');
+      }
     }
 
-    // Telegram Native Share
+    function copyCA() {
+      const ca = 'BBXYnoxijWriwwt4RbWQdgBugf8NnUWehipiipGEJ8zT';
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(ca).then(() => showToast('📋 Contract Address copied!'));
+      } else {
+        showToast('CA: ' + ca.slice(0, 8) + '...');
+      }
+    }
+
     function shareTelegram() {
-      const text = encodeURIComponent("🚀 Play DogeMoon Tap-to-Earn on Telegram! 700M burned, 30M Airdrop Pool is LIVE. Mine $DMOON now!");
+      const text = encodeURIComponent('🚀 Play DogeMoon Tap-to-Earn on Telegram! 700M burned, 30M Airdrop Pool is LIVE. Mine $DMOON now!');
       const url = encodeURIComponent('https://t.me/DogeMoonTapBot');
       const shareUrl = `https://t.me/share/url?url=${url}&text=${text}`;
-      if (tg && tg.openTelegramLink) {
+      if (tg?.openTelegramLink) {
         tg.openTelegramLink(shareUrl);
       } else {
         window.open(shareUrl, '_blank');
       }
     }
 
-    updateUI();
+    // ==========================================
+    // LIVE LEADERBOARD
+    // ==========================================
+    async function loadLeaderboard() {
+      const listEl = document.getElementById('leaderboard-list');
+      const totalScoreEl = document.getElementById('lb-total-mined');
+      const totalMinersEl = document.getElementById('lb-total-miners');
+      const myRankEl = document.getElementById('lb-my-rank');
+      const myShareEl = document.getElementById('lb-my-share');
+
+      listEl.innerHTML = '<div style="text-align:center; padding:22px; color:var(--text-dim); font-size:12px;">Loading top miners...</div>';
+
+      try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/players?select=*&order=score.desc&limit=50`, {
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+        });
+        const players = await res.json();
+        if (!Array.isArray(players) || players.length === 0) {
+          listEl.innerHTML = '<div style="text-align:center; padding:22px; color:var(--text-dim); font-size:12px;">No miners found yet. Start tapping!</div>';
+          return;
+        }
+
+        let totalCommunityScore = 0;
+        players.forEach(p => { totalCommunityScore += Number(p.score || 0); });
+        totalScoreEl.textContent = `${totalCommunityScore.toLocaleString()} $DMOON`;
+        totalMinersEl.textContent = `${players.length}`;
+
+        const { uid, uname } = getUserIdentity();
+        let myRank = -1;
+        let html = '';
+
+        players.forEach((p, idx) => {
+          const rank = idx + 1;
+          const isMe = (p.telegram_id === uid) || (uname && p.username === uname);
+          if (isMe) myRank = rank;
+
+          let medal = `#${rank}`;
+          let medalColor = 'var(--text-dim)';
+          if (rank === 1) { medal = '🥇'; medalColor = '#FFD700'; }
+          else if (rank === 2) { medal = '🥈'; medalColor = '#E2E8F0'; }
+          else if (rank === 3) { medal = '🥉'; medalColor = '#CD7F32'; }
+
+          const rawName = p.username ? `@${p.username}` : (p.first_name || 'Cadet');
+          const safeName = escapeHtml(rawName);
+          const pScore = Number(p.score || 0);
+          const lg = getLeague(pScore);
+
+          html += `
+            <div class="card-item ${isMe ? 'my-rank-highlight' : ''}" style="margin-bottom:8px; padding:10px 12px;">
+              <div style="font-weight:900; font-size:${rank <= 3 ? '18px' : '13px'}; min-width:32px; text-align:center; color:${medalColor};">${medal}</div>
+              <div class="card-info">
+                <div style="font-weight:800; font-size:13px; color:${isMe ? 'var(--secondary)' : '#fff'}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                  ${safeName} ${isMe ? '<span style="font-size:9px; background:rgba(20,241,149,0.2); padding:1px 6px; border-radius:6px; color:var(--secondary); font-weight:800;">YOU</span>' : ''}
+                </div>
+                <div style="font-size:10.5px; color:${p.solana_wallet ? 'var(--secondary)' : 'var(--text-dim)'};">
+                  ${lg.ico} ${lg.name} • ${p.solana_wallet ? '✓ Wallet' : 'No wallet'}
+                </div>
+              </div>
+              <div style="text-align:right; flex-shrink:0;">
+                <div style="font-weight:900; color:var(--accent); font-size:14px; font-variant-numeric:tabular-nums;">${pScore.toLocaleString()}</div>
+                <div style="font-size:9.5px; color:var(--text-dim);">$DMOON</div>
+              </div>
+            </div>
+          `;
+        });
+
+        listEl.innerHTML = html;
+        const rankStr = myRank > 0 ? `#${myRank}` : (score > 0 ? 'Top 100' : 'Unranked');
+        myRankEl.textContent = rankStr;
+        document.getElementById('hud-global-rank').textContent = rankStr;
+
+        if (totalCommunityScore > 0) {
+          const share = Math.floor((score / Math.max(score, totalCommunityScore)) * 30000000);
+          myShareEl.textContent = `~${share.toLocaleString()} $DMOON`;
+        }
+      } catch (err) {
+        listEl.innerHTML = `<div style="text-align:center; padding:20px; color:var(--danger); font-size:12px;">Could not load rankings. Tap Refresh to retry.</div>`;
+      }
+    }
+
+    // ==========================================
+    // NAVIGATION CONTROLLER
+    // ==========================================
+    const TABS = ['tap', 'boosts', 'quests', 'airdrop', 'rank'];
+
+    function switchTab(tab) {
+      if (!TABS.includes(tab)) tab = 'tap';
+      lastRenderTab = tab;
+
+      TABS.forEach(t => {
+        document.getElementById(`view-${t}`).classList.toggle('active', t === tab);
+        document.getElementById(`nav-${t}`).classList.toggle('active', t === tab);
+      });
+
+      if (tg?.HapticFeedback) tg.HapticFeedback.selectionChanged?.();
+      if (tab === 'boosts') updateBoostsUI();
+      if (tab === 'airdrop') renderStreakGrid();
+      if (tab === 'rank') loadLeaderboard();
+    }
+
+    // ==========================================
+    // BOOTSTRAP
+    // ==========================================
+    renderSavedWallet();
+    refreshQuestStates();
+    renderStreakGrid();
+    scheduleRender(false);
+    hydrateFromCloud();
   </script>
 </body>
 </html>
