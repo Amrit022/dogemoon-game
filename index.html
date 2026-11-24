@@ -49,6 +49,11 @@
     }
 
     /* App Container */
+    .my-rank-highlight {
+      border: 1px solid rgba(20, 241, 149, 0.4) !important;
+      background: rgba(20, 241, 149, 0.08) !important;
+    }
+
     .app-container {
       width: 100%;
       max-width: 440px;
@@ -640,6 +645,7 @@
         </div>
       </div>
       <div class="header-actions">
+        <button class="icon-btn" id="btn-leaderboard-top" onclick="openModal('leaderboard-modal')" title="Leaderboard">🏆</button>
         <button class="icon-btn" id="sfx-btn" onclick="toggleSFX()" title="Sound FX">🔊</button>
         <button class="icon-btn" onclick="openModal('daily-modal')" title="Daily Bonus">🎁</button>
       </div>
@@ -698,9 +704,9 @@
         Airdrop
       </button>
 
-      <button class="nav-btn" id="tab-trade" onclick="openModal('trade-modal')">
-        <svg viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>
-        Trade
+      <button class="nav-btn" id="tab-leaderboard" onclick="openModal('leaderboard-modal')">
+        <svg viewBox="0 0 24 24"><path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0 0 11 15.9V19H7v2h10v-2h-4v-3.1c1.8-.45 3.19-1.93 3.61-3.96C19.08 11.63 21 9.55 21 7V6c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z"/></svg>
+        Rank 🏆
       </button>
     </div>
 
@@ -791,7 +797,7 @@
           <h4>📊 View Live Chart</h4>
           <p>+1,000 $DMOON</p>
         </div>
-        <button class="card-btn" id="task-btn-dex" onclick="doTask('dex', 'https://dexscreener.com/solana/BBXYnoxijWriwwt4RbWQdgBugf8NnUWehipiipGEJ8zT', 1000)">Claim</button>
+        <button class="card-btn" id="task-btn-dex" onclick="doTask('dex', 'https://dexscreener.com/solana/BBXYnoxijWriwwt4RbWQdgBugf8NnUWehipiipGEJ8zT", 1000)">Claim</button>
       </div>
     </div>
 
@@ -812,12 +818,67 @@
         Register your Solana wallet address below. At the end of Season 1, real on-chain $DMOON will be airdropped straight to top Telegram miners!
       </p>
 
+      <div style="display:flex; gap:10px; margin-bottom:14px;">
+        <button class="action-btn" style="flex:1; margin-bottom:0;" onclick="openModal('leaderboard-modal')">🏆 Leaderboard</button>
+        <button class="action-btn" style="flex:1; margin-bottom:0; background:rgba(20,241,149,0.15); border:1px solid var(--secondary); color:var(--secondary);" onclick="openModal('trade-modal')">📈 Chart & Buy</button>
+      </div>
       <input type="text" id="wallet-input" class="input-field" placeholder="Paste Solana address (e.g. kwQQ...VNk)">
       <button class="action-btn" onclick="saveWallet()">Save Wallet Address</button>
       <div id="wallet-status" style="font-size: 12px; color: var(--secondary); margin-bottom: 16px; text-align: center; font-weight: 700;"></div>
 
       <button class="action-btn" style="background: rgba(34, 158, 217, 0.2); color: #229ED9; border: 1px solid #229ED9;" onclick="shareTelegram()">
         ✈️ Invite Friends via Telegram (+10,000)
+      </button>
+    </div>
+
+    <!-- Leaderboard Modal -->
+    <div class="modal" id="leaderboard-modal">
+      <div class="modal-header">
+        <h2>🏆 Live Leaderboard</h2>
+        <button class="modal-close" onclick="closeModal('leaderboard-modal')">&times;</button>
+      </div>
+
+      <div class="pool-box" style="margin-bottom: 12px; background: linear-gradient(135deg, rgba(153,69,255,0.22), rgba(20,241,149,0.15)); border: 1px solid rgba(255,255,255,0.12);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <div style="font-size: 11px; text-transform: uppercase; color: var(--secondary); font-weight: 800; letter-spacing: 0.5px;">Season 1 Airdrop Pool</div>
+          <div style="font-size: 12px; color: var(--accent); font-weight: 800;">30,000,000 $DMOON</div>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--text-dim);">
+          <span>Total Community Mined:</span>
+          <span id="lb-total-mined" style="color: #fff; font-weight: 700;">Loading...</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--text-dim); margin-top: 4px;">
+          <span>Active Miners:</span>
+          <span id="lb-total-miners" style="color: var(--secondary); font-weight: 700;">17+</span>
+        </div>
+      </div>
+
+      <!-- Player Personal Rank Banner -->
+      <div style="background: rgba(255,255,255,0.04); border: 1px solid var(--card-border); border-radius: 14px; padding: 12px 14px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <div style="font-size: 11px; color: var(--text-dim); text-transform: uppercase;">Your Current Rank</div>
+          <div id="lb-my-rank" style="font-size: 20px; font-weight: 900; color: var(--secondary);">#--</div>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-size: 11px; color: var(--text-dim); text-transform: uppercase;">Est. Airdrop Allocation</div>
+          <div id="lb-my-share" style="font-size: 14px; font-weight: 800; color: var(--accent);">-- $DMOON</div>
+        </div>
+      </div>
+
+      <div style="font-size: 11px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; margin-bottom: 8px; display: flex; justify-content: space-between; padding: 0 4px;">
+        <span>Rank & Cadet</span>
+        <span>Mined Balance</span>
+      </div>
+
+      <!-- Dynamic Miners List -->
+      <div id="leaderboard-list" style="max-height: 280px; overflow-y: auto; padding-right: 2px;">
+        <div style="text-align: center; padding: 25px; color: var(--text-dim);">
+          Connecting to Supabase Cloud...
+        </div>
+      </div>
+
+      <button class="action-btn" style="margin-top: 14px; background: rgba(153,69,255,0.18); border: 1px solid var(--primary); color: #fff; font-weight: 700;" onclick="loadLeaderboard()">
+        🔄 Refresh Rankings
       </button>
     </div>
 
@@ -910,6 +971,146 @@
     }
 
     // ==========================================
+    // SUPABASE CLOUD DATABASE & LEADERBOARD
+    // ==========================================
+    const SUPABASE_URL = 'https://xvtdrtpywxpwzipwyenk.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh2dGRydHB5d3hwd3ppcHd5ZW5rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU1Mjc2NDksImV4cCI6MjExMTEwMzY0OX0.wARPuSR5km9jrwvhajcoH1cd_7NYSI3TUJ4q9DAnmcE';
+
+    let lastSyncTime = 0;
+    let syncTimeout = null;
+
+    async function syncScoreToCloud(immediate = false) {
+      const now = Date.now();
+      if (!immediate && now - lastSyncTime < 6000) {
+        if (!syncTimeout) {
+          syncTimeout = setTimeout(() => {
+            syncTimeout = null;
+            syncScoreToCloud(true);
+          }, 6000);
+        }
+        return;
+      }
+      lastSyncTime = now;
+      if (syncTimeout) {
+        clearTimeout(syncTimeout);
+        syncTimeout = null;
+      }
+
+      const tgUser = JSON.parse(localStorage.getItem('dmoon_tg_user') || 'null');
+      let uid = tgUser ? String(tgUser.id) : (localStorage.getItem('dmoon_user_id') || '');
+      if (!uid) {
+        uid = 'guest_' + Math.floor(100000 + Math.random() * 900000);
+        localStorage.setItem('dmoon_user_id', uid);
+      }
+      const uname = tgUser ? (tgUser.username || tgUser.first_name || 'Cadet') : ('Cadet_' + uid.slice(-4));
+      const fname = tgUser ? (tgUser.first_name || 'Cadet') : 'Cadet';
+      const wallet = localStorage.getItem('dmoon_wallet') || null;
+
+      try {
+        await fetch(SUPABASE_URL + '/rest/v1/players', {
+          method: 'POST',
+          headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': 'Bearer ' + SUPABASE_KEY,
+            'Content-Type': 'application/json',
+            'Prefer': 'resolution=merge-duplicates'
+          },
+          body: JSON.stringify({
+            telegram_id: uid,
+            username: uname,
+            first_name: fname,
+            score: score,
+            solana_wallet: wallet,
+            last_active: new Date().toISOString()
+          })
+        });
+      } catch (e) {
+        console.warn('Supabase sync skipped:', e.message);
+      }
+    }
+
+    async function loadLeaderboard() {
+      const listEl = document.getElementById('leaderboard-list');
+      const totalScoreEl = document.getElementById('lb-total-mined');
+      const totalMinersEl = document.getElementById('lb-total-miners');
+      const myRankEl = document.getElementById('lb-my-rank');
+      const myShareEl = document.getElementById('lb-my-share');
+
+      if (!listEl) return;
+      listEl.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-dim);">Loading top miners...</div>';
+
+      try {
+        const res = await fetch(SUPABASE_URL + '/rest/v1/players?select=*&order=score.desc&limit=50', {
+          headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': 'Bearer ' + SUPABASE_KEY
+          }
+        });
+        const players = await res.json();
+        if (!Array.isArray(players) || players.length === 0) {
+          listEl.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-dim);">No miners found yet. Start tapping to claim #1!</div>';
+          return;
+        }
+
+        let totalCommunityScore = 0;
+        players.forEach(p => totalCommunityScore += Number(p.score || 0));
+        if (totalScoreEl) totalScoreEl.innerText = totalCommunityScore.toLocaleString() + ' $DMOON';
+        if (totalMinersEl) totalMinersEl.innerText = players.length;
+
+        const tgUser = JSON.parse(localStorage.getItem('dmoon_tg_user') || 'null');
+        const myId = tgUser ? String(tgUser.id) : localStorage.getItem('dmoon_user_id');
+
+        let myRank = -1;
+        let html = '';
+
+        players.forEach((p, idx) => {
+          const rank = idx + 1;
+          const isMe = (p.telegram_id === myId) || (tgUser && p.username === tgUser.username);
+          if (isMe) myRank = rank;
+
+          let medal = '#' + rank;
+          let medalColor = 'var(--text-dim)';
+          if (rank === 1) { medal = '🥇 #1'; medalColor = '#FFD700'; }
+          else if (rank === 2) { medal = '🥈 #2'; medalColor = '#E0E0E0'; }
+          else if (rank === 3) { medal = '🥉 #3'; medalColor = '#CD7F32'; }
+
+          const displayName = p.username ? ('@' + p.username) : (p.first_name || 'Cadet');
+
+          html += `
+            <div class="card-item ${isMe ? 'my-rank-highlight' : ''}" style="margin-bottom:8px; padding:10px 12px; display:flex; align-items:center;">
+              <div style="font-weight:900; font-size:15px; min-width:44px; color:${medalColor};">${medal}</div>
+              <div class="card-info" style="flex:1; margin-left:6px;">
+                <div style="font-weight:700; font-size:14px; color:${isMe ? 'var(--secondary)' : 'var(--text)'};">
+                  ${displayName} ${isMe ? '<span style="font-size:10px; background:rgba(20,241,149,0.2); padding:2px 6px; border-radius:6px; color:var(--secondary); font-weight:800;">YOU</span>' : ''}
+                </div>
+                <div style="font-size:11px; color:${p.solana_wallet ? 'var(--secondary)' : 'var(--text-dim)'};">
+                  ${p.solana_wallet ? '✓ Wallet linked' : 'No wallet yet'}
+                </div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-weight:800; color:var(--accent); font-size:15px;">${Number(p.score).toLocaleString()}</div>
+                <div style="font-size:10px; color:var(--text-dim);">$DMOON</div>
+              </div>
+            </div>
+          `;
+        });
+
+        listEl.innerHTML = html;
+
+        if (myRankEl) {
+          myRankEl.innerText = myRank > 0 ? ('#' + myRank) : (score > 0 ? 'Top 100' : 'Unranked');
+        }
+        if (myShareEl && totalCommunityScore > 0) {
+          const share = Math.floor((score / Math.max(score, totalCommunityScore)) * 30000000);
+          myShareEl.innerText = '~' + share.toLocaleString() + ' $DMOON';
+        }
+      } catch (err) {
+        listEl.innerHTML = '<div style="text-align:center; padding:20px; color:var(--danger);">Could not load leaderboard: ' + err.message + '</div>';
+      }
+    }
+
+    
+    // ==========================================
     // PERSISTENT GAME STATE
     // ==========================================
     let score = parseInt(localStorage.getItem('dmoon_score') || '0');
@@ -955,6 +1156,7 @@
       localStorage.setItem('dmoon_multitap_cost', multitapCost);
       localStorage.setItem('dmoon_autominer_cost', autoMinerCost);
       localStorage.setItem('dmoon_expand_cost', expandCost);
+      syncScoreToCloud();
     }
 
     // Web Audio Synthesizer
@@ -994,7 +1196,7 @@
 
       // Telegram Native Haptic Feedback
       if (tg && tg.HapticFeedback) {
-        tg.HapticFeedback.notificationOccurred('success');
+        tg.HapticFeedback.impactOccurred('light');
       } else if (navigator.vibrate) {
         navigator.vibrate(10);
       }
@@ -1042,6 +1244,7 @@
       document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
       document.getElementById(id).style.display = 'flex';
       if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+      if (id === 'leaderboard-modal') loadLeaderboard();
     }
 
     function closeModal(id) {
